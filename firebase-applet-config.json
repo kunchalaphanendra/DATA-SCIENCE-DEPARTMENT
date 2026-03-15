@@ -1,0 +1,10 @@
+{
+  "projectId": "data-science-department",
+  "appId": "1:677679614717:web:e0d66168f0030d6b004c94",
+  "apiKey": "AIzaSyDFPK-275TXkEyV1p7h3mgpkCCCfSSbPMk",
+  "authDomain": "data-science-department.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "data-science-department.firebasestorage.app",
+  "messagingSenderId": "677679614717",
+  "measurementId": "G-EMTK444XXZ"
+}

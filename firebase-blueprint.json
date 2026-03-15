@@ -1,0 +1,142 @@
+{
+  "entities": {
+    "Notice": {
+      "title": "Notice",
+      "description": "Department notices and announcements",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the notice" },
+        "content": { "type": "string", "description": "Detailed content" },
+        "date": { "type": "string", "format": "date", "description": "Date of the notice" },
+        "expiryDate": { "type": "string", "format": "date", "description": "When the notice expires" },
+        "priority": { "type": "string", "enum": ["High", "Normal"], "description": "Priority level" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["title", "content", "date", "priority", "createdAt"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "Department events and news",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "venue": { "type": "string" },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["Upcoming", "Past"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "description", "date", "venue", "category", "status", "createdAt"]
+    },
+    "Faculty": {
+      "title": "Faculty",
+      "description": "Faculty and staff members",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "designation": { "type": "string" },
+        "qualification": { "type": "string" },
+        "specialization": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "linkedin": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "departmentRole": { "type": "string" },
+        "portfolioUrl": { "type": "string" },
+        "experience": { "type": "string" },
+        "publications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "badge": { "type": "string" },
+              "text": { "type": "string" }
+            }
+          }
+        },
+        "awards": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "order": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "designation", "qualification", "email", "order", "createdAt"]
+    },
+    "Achievement": {
+      "title": "Achievement",
+      "description": "Student achievements",
+      "type": "object",
+      "properties": {
+        "studentName": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "year": { "type": "string" },
+        "description": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["studentName", "title", "category", "year", "createdAt"]
+    },
+    "GalleryImage": {
+      "title": "GalleryImage",
+      "description": "Images for the gallery",
+      "type": "object",
+      "properties": {
+        "imageUrl": { "type": "string" },
+        "album": { "type": "string" },
+        "caption": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["imageUrl", "album", "createdAt"]
+    },
+    "Placement": {
+      "title": "Placement",
+      "description": "Placed students data",
+      "type": "object",
+      "properties": {
+        "studentName": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "company": { "type": "string" },
+        "package": { "type": "string" },
+        "batchYear": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["studentName", "company", "package", "batchYear", "createdAt"]
+    },
+    "PlacementStats": {
+      "title": "PlacementStats",
+      "description": "Yearly placement statistics",
+      "type": "object",
+      "properties": {
+        "year": { "type": "string" },
+        "placed": { "type": "number" },
+        "highest": { "type": "string" },
+        "average": { "type": "string" },
+        "companies": { "type": "number" }
+      },
+      "required": ["year", "placed", "highest", "average", "companies"]
+    },
+    "CompanyLogo": {
+      "title": "CompanyLogo",
+      "description": "Logos of recruiting companies",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "logoUrl": { "type": "string" }
+      },
+      "required": ["name", "logoUrl"]
+    }
+  },
+  "firestore": {
+    "notices": { "schema": "Notice", "description": "Collection of department notices" },
+    "events": { "schema": "Event", "description": "Collection of department events" },
+    "faculty": { "schema": "Faculty", "description": "Collection of faculty members" },
+    "achievements": { "schema": "Achievement", "description": "Collection of student achievements" },
+    "gallery": { "schema": "GalleryImage", "description": "Collection of gallery images" },
+    "placements": { "schema": "Placement", "description": "Collection of placed students" },
+    "placementStats": { "schema": "PlacementStats", "description": "Collection of placement statistics" },
+    "companyLogos": { "schema": "CompanyLogo", "description": "Collection of company logos" }
+  }
+}
