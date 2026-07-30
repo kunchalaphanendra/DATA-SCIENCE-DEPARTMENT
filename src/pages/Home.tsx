@@ -13,7 +13,7 @@ export default function Home() {
   const [events, setEvents] = useState<Event[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [placements, setPlacements] = useState<Placement[]>([]);
-  const [faculty, setFaculty] = useState<Faculty[]>([]);
+  const [faculty, setFaculty] = useState<Faculty[]>(defaultFacultyData.slice(0, 6));
 
   // Static Previews
   const topCourses = [
@@ -36,14 +36,14 @@ export default function Home() {
         supabase.from('events').select('*').order('date', { ascending: false }).limit(3),
         supabase.from('achievements').select('*').order('id', { ascending: false }).limit(3),
         supabase.from('placements').select('*').order('id', { ascending: false }).limit(8),
-        supabase.from('faculty').select('*').limit(4)
+        supabase.from('faculty').select('*').order('order', { ascending: true }).limit(6)
       ]);
 
       if (n.data) setNotices(n.data);
       if (e.data) setEvents(e.data);
       if (a.data) setAchievements(a.data);
       if (p.data) setPlacements(p.data);
-      if (f.data) setFaculty(f.data);
+      if (f.data && f.data.length > 0) setFaculty(f.data);
     };
 
     fetchData();
