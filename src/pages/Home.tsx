@@ -453,7 +453,7 @@ export default function Home() {
                     <div className="relative rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 p-2.5 text-blue-600 shadow-sm border border-blue-200/50"><BookOpen size={22} className="drop-shadow-sm"/></div>
                     <h2 className="text-2xl font-bold text-violet-900 tracking-tight">Core Subjects</h2>
                   </div>
-                  <Link to="/courses" className="text-sm font-bold text-gray-500 hover:text-blue-600 transition-colors focus:outline-none">View Syllabus</Link>
+                  <a href="https://vignanits.ac.in/academics/syllabus.php" target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-slate-500 hover:text-[#F59E0B] transition-colors focus:outline-none flex items-center gap-1">View Syllabus →</a>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   {topCourses.map((c, i) => (
