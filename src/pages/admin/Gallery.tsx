@@ -46,7 +46,7 @@ export default function AdminGallery() {
 
     setLoading(true);
     try {
-      for (const file of Array.from(selectedFiles)) {
+      for (const file of Array.from(selectedFiles) as File[]) {
         const path = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
         const imageUrl = await uploadFile('gallery', path, file);
 

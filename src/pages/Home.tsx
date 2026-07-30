@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useAnimation, useInView } from 'motion/react';
-import { ArrowRight, Users, GraduationCap, Building2, Calendar, Trophy, Megaphone, Briefcase, BookOpen, Beaker } from 'lucide-react';
+import { ArrowRight, Users, GraduationCap, Building2, Calendar, Trophy, Megaphone, Briefcase, BookOpen, Beaker, ChevronDown, Sparkles, Cpu, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/src/lib/supabase';
 import { Notice, Event, Achievement, Placement, Faculty } from '@/src/types';
@@ -29,66 +29,28 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    // Load notices
-    supabase.from('notices').select('*').order('date', { ascending: false }).limit(5)
-      .then(({ data }) => {
-        if (data) setNotices(data.map(r => ({
-          id: r.id, title: r.title, content: r.content, date: r.date, priority: r.priority,
-        })));
-      });
+    // Initial fetch
+    const fetchData = async () => {
+      const [n, e, a, p, f] = await Promise.all([
+        supabase.from('notices').select('*').order('date', { ascending: false }).limit(5),
+        supabase.from('events').select('*').order('date', { ascending: false }).limit(3),
+        supabase.from('achievements').select('*').order('id', { ascending: false }).limit(3),
+        supabase.from('placements').select('*').order('id', { ascending: false }).limit(8),
+        supabase.from('faculty').select('*').limit(4)
+      ]);
 
-    // Load events
-    supabase.from('events').select('*').order('created_at', { ascending: false }).limit(3)
-      .then(({ data }) => {
-        if (data) setEvents(data.map(r => ({
-          id: r.id, title: r.title, description: r.description, date: r.date,
-          venue: r.venue, category: r.category, status: r.status, imageUrl: r.image_url || '',
-        })));
-      });
+      if (n.data) setNotices(n.data);
+      if (e.data) setEvents(e.data);
+      if (a.data) setAchievements(a.data);
+      if (p.data) setPlacements(p.data);
+      if (f.data) setFaculty(f.data);
+    };
 
-    // Load achievements
-    supabase.from('achievements').select('*').order('created_at', { ascending: false }).limit(6)
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setAchievements(data.map(r => ({
-            id: r.id, studentName: r.student_name, title: r.title,
-            category: r.category, year: r.year, description: r.description, photoUrl: r.photo_url || '',
-          })));
-        } else {
-          setAchievements(defaultAchievementsData.slice(0, 6));
-        }
-      });
-      
-    // Load placements
-    supabase.from('placements').select('*').order('created_at', { ascending: false }).limit(3)
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setPlacements(data.map(r => ({
-            id: r.id, studentName: r.student_name, company: r.company,
-            package: r.package, batchYear: r.batch_year, photoUrl: r.photo_url || '',
-          })));
-        }
-      });
+    fetchData();
 
-    // Load faculty
-    supabase.from('faculty').select('*').order('order', { ascending: true }).limit(3)
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setFaculty(data.map(r => ({
-            id: r.id, name: r.name, designation: r.designation,
-            qualification: r.qualification, specialization: r.specialization,
-            email: r.email, linkedin: r.linkedin || '', departmentRole: r.department_role || '',
-            portfolioUrl: r.portfolio_url || '', experience: r.experience || '',
-            publications: r.publications || [], awards: r.awards || [], photoUrl: r.photo_url || '',
-            order: r.order || 0,
-          })));
-        } else {
-          setFaculty(defaultFacultyData.slice(0, 3));
-        }
-      });
-
-    // Real-time for notices (so ticker updates live)
-    const channel = supabase.channel('home-notices')
+    // Setup Realtime Subscription for Notices
+    const channel = supabase
+      .channel('notices-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'notices' }, () => {
         supabase.from('notices').select('*').order('date', { ascending: false }).limit(5)
           .then(({ data }) => {
@@ -105,113 +67,160 @@ export default function Home() {
   return (
     <div className="flex flex-col overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative flex h-[calc(100vh-104px)] items-center justify-center overflow-hidden bg-violet-900">
-        <div className="absolute inset-0">
+      <section className="relative h-[calc(100vh-80px)] min-h-[560px] w-full overflow-hidden bg-sky-100">
+        {/* Hidden SVG Filter for Real-time Hardware Image Sharpening */}
+        <svg className="absolute h-0 w-0 pointer-events-none" aria-hidden="true">
+          <filter id="sharpen-filter">
+            <feConvolveMatrix
+              order="3,3"
+              preserveAlpha="true"
+              kernelMatrix="0 -0.15 0  -0.15 1.6 -0.15  0 -0.15 0"
+            />
+          </filter>
+        </svg>
+
+        {/* Background Campus Image - Enhanced Clarity, Vivid Sky, Hardware Sharpened */}
+        <div className="absolute inset-0 z-0">
           <img
-            src="https://vignanits.ac.in/wp-content/uploads/2020/07/IMG-20200713-WA0016.jpg"
-            alt="Hero Background"
-            className="h-full w-full object-cover"
+            src="/vignan-campus.jpg"
+            alt="Vignan Institute of Technology and Science Campus"
+            className="h-full w-full object-cover object-[center_72%]"
+            style={{
+              filter: 'url(#sharpen-filter) contrast(1.08) brightness(1.03) saturate(1.08)',
+              WebkitFilter: 'url(#sharpen-filter) contrast(1.08) brightness(1.03) saturate(1.08)',
+            }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-black/50 to-black/80" />
+          {/* Extremely soft top gradient to preserve natural sky clarity and bright colors */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                'linear-gradient(to bottom, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 30%, transparent 65%)',
+            }}
+          />
         </div>
-        
-        <div className="relative z-10 mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+
+        {/* Hero Content - Placed high in top blue sky area */}
+        <div className="relative z-10 mx-auto flex h-full max-w-6xl flex-col items-center justify-start px-4 pt-3 text-center sm:px-6 sm:pt-5 md:pt-6 lg:px-8">
+          {/* Main Title */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl"
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="font-['Poppins',sans-serif] text-3xl font-[900] tracking-tight text-[#0F172A] sm:text-4xl md:text-5xl lg:text-[52px] leading-tight"
+            style={{
+              textShadow: '0 1px 8px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.5)',
+            }}
           >
             Computer Science & Engineering
-            <span className="block text-amber-500">(Data Science)</span>
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mx-auto mt-6 max-w-2xl text-lg font-medium text-white drop-shadow sm:text-xl"
-          >
-            Empowering the next generation of data scientists and AI engineers at Vignan Institute of Technology and Science.
-          </motion.p>
+
+          {/* Subtitle */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="mt-10 flex justify-center gap-4"
+            transition={{ duration: 0.95, ease: 'easeOut' }}
+            className="mt-0.5 font-['Poppins',sans-serif] text-2xl font-[800] text-[#F59E0B] sm:text-3xl md:text-4xl lg:text-[38px]"
+            style={{
+              textShadow: '0 1px 8px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.5)',
+            }}
+          >
+            (Data Science)
+          </motion.div>
+
+          {/* Description - Clean 2-line text without orphan single words */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.1, ease: 'easeOut' }}
+            className="mx-auto mt-3 max-w-xl font-['Inter',sans-serif] text-sm font-[600] leading-relaxed text-[#1E293B] sm:text-base md:text-lg sm:max-w-2xl"
+            style={{
+              textShadow: '0 1px 6px rgba(255,255,255,0.9)',
+            }}
+          >
+            Empowering the next generation of data scientists and AI engineers at Vignan Institute of Technology and Science.
+          </motion.p>
+
+          {/* CTA Button */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+            className="mt-4 sm:mt-5"
           >
             <Link
               to="/about"
-              className="flex items-center gap-2 rounded-full bg-amber-500 px-8 py-3 text-lg font-bold text-violet-900 shadow-lg transition-all hover:bg-amber-600 hover:shadow-xl"
+              className="inline-flex items-center gap-2 rounded-full bg-[#F59E0B] px-8 py-3 font-['Inter',sans-serif] text-base font-[700] text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-[#d98206] hover:shadow-xl active:translate-y-0 sm:text-lg"
             >
-              Explore Department <ArrowRight size={20} />
+              Explore Department <ArrowRight size={20} className="stroke-[2.5]" />
             </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* Notice Board Preview (Vertical Scroll) & Quick Stats */}
-      <section className="bg-white py-16">
+      {/* Page 2 - Fits Notice Board, Stat Cards, and Latest Achievements on one screen fold */}
+      <section className="relative z-20 bg-white pt-6 pb-4 border-t border-slate-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-3">
+          <div className="grid gap-6 lg:grid-cols-3 items-stretch">
             
             {/* Left: Notice Board */}
-            <div className="col-span-1 flex flex-col rounded-3xl border border-gray-100 bg-white p-6 shadow-xl shadow-gray-200/50">
-              <div className="mb-6 flex items-center justify-between">
-                <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-violet-900">
-                  <Megaphone size={20} className="text-amber-500" />
+            <div className="col-span-1 flex flex-col rounded-[22px] border border-[#0F172A]/[0.08] bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.05)]">
+              <div className="mb-3.5 flex items-center justify-between">
+                <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-slate-900 text-xs sm:text-sm">
+                  <Megaphone size={16} className="text-[#F59E0B]" />
                   <span>Notice Board</span>
                 </div>
-                <Link to="/notices" className="text-sm font-bold text-violet-900 hover:underline">
-                  View All
+                <Link to="/notices" className="text-xs font-bold text-[#F59E0B] hover:underline">
+                  View All →
                 </Link>
               </div>
               
-              <div className="relative flex-1 overflow-hidden h-[300px]">
+              <div className="relative flex-1 overflow-hidden h-[190px]">
                 {notices.length > 0 ? (
-                  <div className="absolute inset-0 flex flex-col gap-4 animate-scroll-y group-hover:[animation-play-state:paused] hover:[animation-play-state:paused]">
+                  <div className="absolute inset-0 flex flex-col gap-2.5 animate-scroll-y group-hover:[animation-play-state:paused] hover:[animation-play-state:paused]">
                     {[...notices, ...notices].map((notice, idx) => (
-                      <div key={`${notice.id}-${idx}`} className="rounded-xl border border-gray-100 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50">
-                        <div className="mb-2 flex items-center justify-between">
-                          <span className="text-xs font-bold text-amber-600">{notice.date}</span>
+                      <div key={`${notice.id}-${idx}`} className="rounded-lg border border-slate-100 bg-slate-50/60 p-2.5 transition-colors hover:bg-slate-100/80">
+                        <div className="mb-1 flex items-center justify-between">
+                          <span className="text-[11px] font-bold text-[#F59E0B]">{notice.date}</span>
                           {notice.priority === 'High' && (
-                            <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-700">URGENT</span>
+                            <span className="rounded-full bg-red-100 px-1.5 py-0.5 text-[9px] font-bold text-red-700">URGENT</span>
                           )}
                         </div>
-                        <h4 className="font-bold text-gray-900 line-clamp-2">{notice.title}</h4>
+                        <h4 className="font-bold text-slate-900 text-xs line-clamp-2">{notice.title}</h4>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="flex h-full items-center justify-center text-sm italic text-gray-500">
+                  <div className="flex h-full items-center justify-center text-xs italic text-slate-500">
                     No active notices.
                   </div>
                 )}
                 {/* Fade overlays */}
-                <div className="pointer-events-none absolute left-0 right-0 top-0 h-8 bg-gradient-to-b from-white to-transparent" />
-                <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent" />
+                <div className="pointer-events-none absolute left-0 right-0 top-0 h-4 bg-gradient-to-b from-white to-transparent" />
+                <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white to-transparent" />
               </div>
             </div>
 
-            {/* Right: Stats Grid */}
-            <div className="col-span-1 lg:col-span-2 grid grid-cols-2 gap-6 sm:grid-cols-4 content-center">
+            {/* Right: Compact Stats Grid */}
+            <div className="col-span-1 lg:col-span-2 grid grid-cols-2 gap-3.5 sm:grid-cols-4 content-center">
               {[
-                { label: 'Students', value: '480+', icon: Users },
-                { label: 'Faculty', value: '24+', icon: GraduationCap },
-                { label: 'Placed', value: '150+', icon: Trophy },
-                { label: 'Years Est.', value: '4', icon: Building2 },
+                { label: 'Students', value: '240+', icon: Users },
+                { label: 'Faculty', value: '18+', icon: GraduationCap },
+                { label: 'Placed', value: '95%', icon: Trophy },
+                { label: 'AI & Data Labs', value: '6+', icon: Beaker },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: i * 0.1 }}
-                  whileHover={{ y: -5 }}
-                  className="flex flex-col items-center justify-center rounded-3xl bg-violet-50/50 p-6 text-center transition-shadow shadow-sm hover:shadow-md border border-violet-100/50"
+                  transition={{ delay: i * 0.08 }}
+                  className="group flex flex-col items-center justify-center rounded-[22px] bg-gradient-to-b from-white to-[#FCFCFD] p-4 text-center border border-[#0F172A]/[0.08] shadow-[0_8px_24px_rgba(15,23,42,0.05)] transition-all duration-300 ease-out hover:-translate-y-[4px] hover:border-[#F59E0B] hover:shadow-[0_16px_32px_rgba(15,23,42,0.08)] cursor-pointer h-full"
                 >
-                  <div className="mb-4 rounded-full bg-white p-3 shadow-sm">
-                    <stat.icon className="text-violet-900" size={28} />
+                  <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100/80 text-slate-700 transition-colors duration-300 group-hover:bg-[#FFF7ED] group-hover:text-[#F59E0B]">
+                    <stat.icon size={20} />
                   </div>
-                  <span className="text-3xl font-extrabold text-violet-900">{stat.value}</span>
-                  <span className="mt-1 text-sm font-bold text-gray-500">{stat.label}</span>
+                  <span className="font-['Inter',sans-serif] text-2xl font-[900] text-[#0F172A] tracking-tight">{stat.value}</span>
+                  <span className="mt-0.5 font-['Inter',sans-serif] text-[10px] sm:text-[11px] font-bold text-[#334155] uppercase tracking-wider">{stat.label}</span>
                 </motion.div>
               ))}
             </div>
@@ -219,129 +228,166 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Achievements Carousel Preview */}
-      <section className="bg-gray-50 py-24 overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-12 flex items-end justify-between">
+      {/* Bright & Vibrant Achievements Carousel Preview */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-amber-50/50 via-white to-amber-50/30 pt-4 pb-8 border-t border-amber-100/60">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-4 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-2">
           <div>
-            <h2 className="text-3xl font-bold text-violet-900">Latest Achievements</h2>
-            <p className="mt-2 text-gray-600">Celebrating the excellence of our bright minds.</p>
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-[#F59E0B]/10 px-3 py-0.5 text-[11px] font-bold text-[#F59E0B] uppercase tracking-wider mb-1 border border-[#F59E0B]/20">
+              <Trophy size={13} /> Student Excellence
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-[900] text-[#0F172A] tracking-tight">Latest Achievements</h2>
+            <p className="mt-0.5 text-xs sm:text-sm font-medium text-slate-600">Celebrating the remarkable success of our bright minds.</p>
           </div>
-          <Link to="/achievements" className="flex items-center gap-2 rounded-full border-2 border-violet-900 px-5 py-2 text-sm font-bold text-violet-900 hover:bg-violet-900 hover:text-white transition-all">
-            View All <ArrowRight size={16} />
+          <Link 
+            to="/achievements" 
+            className="group inline-flex items-center gap-1.5 rounded-full bg-[#F59E0B] hover:bg-[#e08906] px-5 py-2 text-xs font-bold text-white shadow-md shadow-[#F59E0B]/25 transition-all duration-300 hover:scale-105 active:scale-95"
+          >
+            View All <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </div>
 
-        <div className="relative flex w-full overflow-hidden">
-          {/* Scroll Track */}
+        <div className="relative flex w-full overflow-hidden py-2">
+          {/* Scroll Track - Ultra-smooth 60fps GPU Accelerated */}
           {achievements.length > 0 ? (
-            <div className="flex animate-scroll-x hover:[animation-play-state:paused] w-max">
+            <div className="flex animate-scroll-x hover:[animation-play-state:paused] w-max will-change-transform gap-5 px-4">
               {[...achievements, ...achievements].map((achievement, idx) => (
-                <div key={`${achievement.id}-${idx}`} className="w-[300px] shrink-0 px-4">
-                  <div className="flex h-full flex-col items-center rounded-3xl border border-gray-100 bg-white p-8 text-center shadow-lg shadow-gray-200/40 transition-transform hover:-translate-y-2">
-                    <div className="mb-5 h-24 w-24 overflow-hidden rounded-full border-4 border-amber-100 shadow-inner">
+                <div key={`${achievement.id}-${idx}`} className="w-[270px] shrink-0">
+                  <div className="group flex h-full flex-col items-center rounded-[20px] border border-[#0F172A]/[0.08] bg-white p-5 text-center shadow-[0_8px_24px_rgba(15,23,42,0.05)] transition-all duration-300 hover:scale-[1.02] hover:border-[#F59E0B] hover:shadow-[0_14px_30px_rgba(245,158,11,0.15)] cursor-pointer">
+                    <div className="mb-3 h-20 w-20 overflow-hidden rounded-full ring-4 ring-[#F59E0B]/20 p-0.5 shadow-sm group-hover:ring-[#F59E0B] transition-all duration-300">
                       <img
                         src={achievement.photoUrl || `https://picsum.photos/seed/${achievement.id}/200/200`}
                         alt={achievement.studentName}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full rounded-full object-cover"
+                        loading="eager"
+                        decoding="async"
                       />
                     </div>
-                    <div className="mb-3 inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-600">
-                      <Trophy size={12} />
+                    <div className="mb-2 inline-flex items-center gap-1 rounded-full bg-[#FFF7ED] px-3 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#F59E0B] border border-[#F59E0B]/20">
+                      <Trophy size={11} />
                       {achievement.year}
                     </div>
-                    <h3 className="text-lg font-extrabold text-violet-900">{achievement.studentName}</h3>
-                    <span className="mt-1 text-sm font-bold text-gray-500 line-clamp-1">{achievement.title}</span>
+                    <h3 className="text-base font-[900] text-[#0F172A] group-hover:text-[#F59E0B] transition-colors">{achievement.studentName}</h3>
+                    <span className="mt-0.5 text-xs font-semibold text-slate-600 leading-snug line-clamp-2">{achievement.title}</span>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-             <div className="w-full text-center text-gray-500 italic">No achievements found.</div>
+             <div className="w-full text-center text-slate-500 italic">No achievements found.</div>
           )}
-          {/* Fade overlays */}
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-gray-50 to-transparent" />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-gray-50 to-transparent" />
+          {/* Edge Fade Overlays */}
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-amber-50/80 via-white/80 to-transparent z-10" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-amber-50/80 via-white/80 to-transparent z-10" />
         </div>
       </section>
 
-      {/* Placements Preview */}
-      <section className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 flex items-end justify-between">
+      {/* Page 3 - Recent Placements Preview (4 + 4 Grid, 8 Total Cards) */}
+      <section className="bg-white py-12 border-t border-slate-100 min-h-[calc(100vh-80px)] flex flex-col justify-center">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
+          <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3">
             <div>
-              <h2 className="text-3xl font-bold text-violet-900">Recent Placements</h2>
-              <p className="mt-2 text-gray-600">Our students at top companies.</p>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-[#F59E0B]/10 px-3 py-0.5 text-[11px] font-bold text-[#F59E0B] uppercase tracking-wider mb-1.5 border border-[#F59E0B]/20">
+                <Briefcase size={13} /> Career Opportunities
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-[900] text-[#0F172A] tracking-tight">Recent Placements</h2>
+              <p className="mt-0.5 text-xs sm:text-sm font-medium text-slate-600">Our students placed at top global companies.</p>
             </div>
-            <Link to="/placements" className="flex items-center gap-2 rounded-full border-2 border-violet-900 px-5 py-2 text-sm font-bold text-violet-900 hover:bg-violet-900 hover:text-white transition-all">
-              View All <ArrowRight size={16} />
+            <Link 
+              to="/placements" 
+              className="group inline-flex items-center gap-1.5 rounded-full bg-[#F59E0B] hover:bg-[#e08906] px-5 py-2 text-xs font-bold text-white shadow-md shadow-[#F59E0B]/25 transition-all duration-300 hover:scale-105 active:scale-95"
+            >
+              View All <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4.5">
             {placements.map((p) => (
-              <div key={p.id} className="group overflow-hidden rounded-3xl bg-white shadow-xl shadow-gray-200/40 border border-gray-100 transition-all hover:-translate-y-2">
-                <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+              <div 
+                key={p.id} 
+                className="group flex flex-col justify-between overflow-hidden rounded-[20px] bg-white border border-[#0F172A]/[0.08] shadow-[0_6px_20px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#F59E0B] hover:shadow-[0_14px_30px_rgba(245,158,11,0.15)] cursor-pointer"
+              >
+                <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-slate-100">
                   <img
                     src={p.photoUrl || `https://picsum.photos/seed/${p.id}/400/400`}
                     alt={p.studentName}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="eager"
+                    decoding="async"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-violet-900/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </div>
-                <div className="relative p-6 bg-white -mt-6 rounded-t-3xl border-t border-gray-50">
-                  <div className="absolute right-6 top-6 rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-700">
-                    {p.package}
+                <div className="p-3.5 bg-white flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                      <Briefcase size={13} className="text-[#F59E0B]" />
+                      {p.company}
+                    </span>
+                    <span className="rounded-full bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                      {p.package}
+                    </span>
                   </div>
-                  <h3 className="text-xl font-extrabold text-violet-900">{p.studentName}</h3>
-                  <div className="mt-2 flex items-center gap-2 text-sm font-bold text-gray-500">
-                    <Briefcase size={16} className="text-amber-500" />
-                    {p.company}
-                  </div>
+                  <h3 className="text-sm font-[900] text-[#0F172A] group-hover:text-[#F59E0B] transition-colors">{p.studentName}</h3>
                 </div>
               </div>
             ))}
             {placements.length === 0 && (
-              <div className="col-span-3 py-12 text-center text-gray-500 italic">No placements found.</div>
+              <div className="col-span-4 py-12 text-center text-slate-500 italic">No placements found.</div>
             )}
           </div>
         </div>
       </section>
 
-      {/* Upcoming Events Preview */}
-      <section className="bg-violet-900 py-24 text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 flex items-end justify-between">
+      {/* Premium & Cool Upcoming Events Preview */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0F172A] via-slate-900 to-[#1E1B4B] py-20 text-white border-t border-slate-800">
+        {/* Ambient Glow Orbs */}
+        <div className="absolute top-0 right-1/4 h-96 w-96 rounded-full bg-[#F59E0B]/10 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 h-96 w-96 rounded-full bg-violet-600/10 blur-[120px] pointer-events-none" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
             <div>
-              <h2 className="text-3xl font-bold text-white">Upcoming Events</h2>
-              <p className="mt-2 text-violet-200">Workshops, seminars, and hackathons.</p>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-[#F59E0B]/15 px-3.5 py-1 text-xs font-bold text-[#F59E0B] uppercase tracking-wider mb-2 border border-[#F59E0B]/30">
+                <Calendar size={14} /> Campus Highlights
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-[900] text-white tracking-tight">Upcoming Events</h2>
+              <p className="mt-1.5 text-base sm:text-lg font-medium text-slate-400">Workshops, seminars, hackathons, and technical fests.</p>
             </div>
-            <Link to="/events" className="flex items-center gap-2 rounded-full border-2 border-white px-5 py-2 text-sm font-bold text-white hover:bg-white hover:text-violet-900 transition-all">
-              View All <ArrowRight size={16} />
+            <Link 
+              to="/events" 
+              className="group inline-flex items-center gap-2 rounded-full bg-[#F59E0B] hover:bg-[#e08906] px-6 py-2.5 text-sm font-bold text-white shadow-md shadow-[#F59E0B]/25 transition-all duration-300 hover:scale-105 active:scale-95"
+            >
+              View All <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </div>
 
           <div className="grid gap-8 md:grid-cols-3">
             {events.map((event) => (
-              <div key={event.id} className="group overflow-hidden rounded-3xl bg-violet-800 shadow-xl transition-all hover:bg-violet-700 border border-violet-700">
-                <div className="h-48 overflow-hidden">
+              <div 
+                key={event.id} 
+                className="group flex flex-col justify-between overflow-hidden rounded-[24px] bg-slate-800/80 border border-slate-700/60 backdrop-blur-md shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-[#F59E0B]/60 hover:shadow-[0_20px_45px_rgba(245,158,11,0.18)] cursor-pointer"
+              >
+                <div className="relative h-48 w-full overflow-hidden bg-slate-900">
                   <img
                     src={event.imageUrl || `https://picsum.photos/seed/${event.id}/600/400`}
                     alt={event.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="eager"
+                    decoding="async"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
                 </div>
-                <div className="p-8">
-                  <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-amber-500/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-300">
-                    <Calendar size={14} />
+                <div className="p-7 flex flex-col gap-3">
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-[#F59E0B]/20 border border-[#F59E0B]/30 px-3 py-1 text-xs font-bold text-[#F59E0B] w-max">
+                    <Calendar size={13} />
                     <span>{event.date}</span>
                   </div>
-                  <h3 className="mb-3 text-xl font-bold text-white">{event.title}</h3>
-                  <p className="line-clamp-2 text-sm text-violet-200">{event.description}</p>
+                  <h3 className="text-xl font-[900] text-white group-hover:text-[#F59E0B] transition-colors leading-snug">{event.title}</h3>
+                  <p className="line-clamp-2 text-sm text-slate-300 font-normal leading-relaxed">{event.description}</p>
                 </div>
               </div>
             ))}
             {events.length === 0 && (
-              <div className="col-span-3 py-12 text-center text-violet-300 italic">No events found.</div>
+              <div className="col-span-3 py-12 text-center text-slate-400 italic">No events found.</div>
             )}
           </div>
         </div>

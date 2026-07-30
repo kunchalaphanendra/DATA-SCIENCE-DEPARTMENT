@@ -19,7 +19,7 @@ async function testAuth() {
     console.log('Attempting to sign in...');
     await signInWithEmailAndPassword(auth, 'admin@vignan.ac.in', 'admin123');
     console.log('Successfully signed in!');
-  } catch (error: any) {
+  } catch (error) {
     console.error('Auth Error:', error.code, error.message);
   }
 }

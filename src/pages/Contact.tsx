@@ -77,15 +77,20 @@ export default function Contact() {
           {/* Contact Info & Map */}
           <div>
             <div className="mb-12 space-y-8">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+              <a 
+                href="https://maps.google.com/?q=Vignan+Institute+of+Technology+and+Science+Deshmukhi" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-start gap-4 group cursor-pointer block"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-100 transition-colors shrink-0">
                   <MapPin size={24} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-violet-900">Address</h3>
-                  <p className="text-gray-600">Vignan Institute of Technology and Science,<br />Deshmukhi(V), Yadadri Bhuvanagiri(Dist),<br />Telangana - 508284</p>
+                  <h3 className="text-lg font-bold text-violet-900 group-hover:text-violet-700 transition-colors">Address</h3>
+                  <p className="text-gray-600 group-hover:text-gray-800 transition-colors">Vignan Institute of Technology and Science,<br />Deshmukhi(V), Yadadri Bhuvanagiri(Dist),<br />Telangana - 508284</p>
                 </div>
-              </div>
+              </a>
 
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">

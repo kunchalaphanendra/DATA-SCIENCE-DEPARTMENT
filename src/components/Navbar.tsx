@@ -37,82 +37,40 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-violet-900 text-white shadow-lg">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="h-10 w-10 overflow-hidden rounded-full bg-violet-300">
-                <img 
-                  src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Vignan_logo.png" 
-                  alt="VITS Logo" 
-                  className="h-full w-full object-contain" 
-                  referrerPolicy="no-referrer" 
-                />
-              </div>
-              <div className="hidden flex-col sm:flex">
-                <span className="text-sm font-bold leading-tight">VITS</span>
-                <span className="text-[10px] font-medium leading-tight text-amber-500">CSE (Data Science)</span>
-              </div>
-            </Link>
-          </div>
-
-          {/* Desktop Links */}
-          <div className="hidden lg:block">
-            <div className="flex items-center gap-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.href}
-                  className={cn(
-                    "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-violet-800",
-                    location.pathname === link.href ? "text-amber-500" : "text-white"
-                  )}
-                >
-                  {link.name}
-                </Link>
-              ))}
-              <Link
-                to={user ? "/admin/dashboard" : "/admin/login"}
-                className="flex items-center gap-1 rounded-md bg-amber-500 px-4 py-2 text-sm font-bold text-violet-900 transition-all hover:bg-amber-600 hover:scale-105 active:scale-95"
-              >
-                <Shield size={16} />
-                Admin
-              </Link>
+    <header className="sticky top-3 z-50 mx-auto w-[92%] max-w-[1280px]">
+      <nav 
+        className="relative h-[64px] w-full rounded-full bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-xl shadow-slate-900/5 text-slate-800 transition-all duration-300 flex items-center px-4 sm:px-6 justify-between"
+      >
+        {/* Logo Section */}
+        <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="h-10 w-10 overflow-hidden rounded-full bg-amber-500/10 ring-2 ring-amber-500/30 p-0.5 transition-transform group-hover:scale-105">
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Vignan_logo.png" 
+                alt="VITS Logo" 
+                className="h-full w-full object-contain" 
+                referrerPolicy="no-referrer" 
+              />
             </div>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="flex items-center gap-4 lg:hidden">
-            <Link
-              to={user ? "/admin/dashboard" : "/admin/login"}
-              className="flex items-center gap-1 rounded-md bg-amber-500 px-4 py-2 text-sm font-bold text-violet-900 transition-all hover:bg-amber-600 hover:scale-105 active:scale-95"
-            >
-              <Shield size={16} />
-              Admin
-            </Link>
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/10 focus:outline-none"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
+            <div className="hidden flex-col sm:flex">
+              <span className="text-sm font-black tracking-tight text-slate-900 leading-tight">VITS</span>
+              <span className="text-[11px] font-bold leading-tight text-amber-500">CSE (Data Science)</span>
+            </div>
+          </Link>
         </div>
-      </div>
 
-      {/* Mobile Dropdown menu */}
-      {isOpen && (
-        <div className="absolute left-0 top-16 w-full border-t border-white/10 bg-violet-900 shadow-xl lg:hidden">
-          <div className="space-y-1 px-4 pb-4 pt-2">
+        {/* Desktop Navigation Links */}
+        <div className="hidden lg:block">
+          <div className="flex items-center gap-1 xl:gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.href}
-                onClick={() => setIsOpen(false)}
                 className={cn(
-                  "block rounded-md px-3 py-2 text-base font-medium transition-colors",
-                  location.pathname === link.href ? "bg-violet-800 text-amber-500" : "text-white hover:bg-violet-800"
+                  "rounded-full px-3.5 py-1.5 text-sm font-semibold transition-all duration-200",
+                  location.pathname === link.href 
+                    ? "bg-amber-50 text-amber-500 font-bold shadow-sm" 
+                    : "text-slate-700 hover:text-amber-500 hover:bg-slate-50"
                 )}
               >
                 {link.name}
@@ -120,15 +78,62 @@ export default function Navbar() {
             ))}
             <Link
               to={user ? "/admin/dashboard" : "/admin/login"}
-              onClick={() => setIsOpen(false)}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-amber-500 hover:bg-amber-600 px-3 py-2 text-base font-bold text-violet-900 transition-colors active:scale-95"
+              className="ml-2 flex items-center gap-1.5 rounded-full bg-amber-500 hover:bg-amber-600 px-5 py-2 text-sm font-bold text-white transition-all hover:scale-105 active:scale-95 shadow-md shadow-amber-500/25"
             >
-              <Shield size={18} />
-              Admin Panel
+              <Shield size={16} />
+              Admin
             </Link>
           </div>
         </div>
-      )}
-    </nav>
+
+        {/* Mobile menu button */}
+        <div className="flex items-center gap-3 lg:hidden">
+          <Link
+            to={user ? "/admin/dashboard" : "/admin/login"}
+            className="flex items-center gap-1 rounded-full bg-[#F59E0B] hover:bg-[#e08906] px-4 py-2 text-sm font-bold text-white transition-all shadow-sm"
+          >
+            <Shield size={15} />
+            Admin
+          </Link>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="inline-flex items-center justify-center rounded-full p-2 text-slate-700 hover:bg-slate-100 focus:outline-none"
+          >
+            {isOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
+
+        {/* Mobile Dropdown menu */}
+        {isOpen && (
+          <div className="absolute left-0 top-[80px] w-full overflow-hidden rounded-3xl border border-white/70 bg-white/95 backdrop-blur-2xl shadow-2xl p-4 lg:hidden z-50">
+            <div className="space-y-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className={cn(
+                    "block rounded-2xl px-4 py-3 text-base font-semibold transition-colors",
+                    location.pathname === link.href 
+                      ? "bg-[#F59E0B]/10 text-[#F59E0B] font-bold" 
+                      : "text-slate-700 hover:bg-slate-100"
+                  )}
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <Link
+                to={user ? "/admin/dashboard" : "/admin/login"}
+                onClick={() => setIsOpen(false)}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#F59E0B] hover:bg-[#e08906] px-4 py-3 text-base font-bold text-white transition-colors shadow-md shadow-[#F59E0B]/20"
+              >
+                <Shield size={18} />
+                Admin Panel
+              </Link>
+            </div>
+          </div>
+        )}
+      </nav>
+    </header>
   );
 }
