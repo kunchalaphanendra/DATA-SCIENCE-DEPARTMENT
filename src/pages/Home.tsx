@@ -40,10 +40,57 @@ export default function Home() {
       ]);
 
       if (n.data) setNotices(n.data);
-      if (e.data) setEvents(e.data);
-      if (a.data) setAchievements(a.data);
-      if (p.data) setPlacements(p.data);
-      if (f.data && f.data.length > 0) setFaculty(f.data);
+      if (e.data) {
+        setEvents(e.data.map(r => ({
+          id: r.id,
+          title: r.title,
+          description: r.description,
+          date: r.date,
+          venue: r.venue,
+          category: r.category,
+          status: r.status,
+          imageUrl: r.image_url || r.imageUrl || '',
+        })));
+      }
+      if (a.data) {
+        setAchievements(a.data.map(r => ({
+          id: r.id,
+          studentName: r.student_name || r.studentName,
+          title: r.title,
+          description: r.description,
+          year: r.year,
+          category: r.category,
+          photoUrl: r.photo_url || r.photoUrl || '',
+        })));
+      }
+      if (p.data) {
+        setPlacements(p.data.map(r => ({
+          id: r.id,
+          studentName: r.student_name || r.studentName,
+          company: r.company,
+          package: r.package,
+          year: r.year,
+          photoUrl: r.photo_url || r.photoUrl || '',
+        })));
+      }
+      if (f.data && f.data.length > 0) {
+        setFaculty(f.data.map(r => ({
+          id: r.id,
+          name: r.name,
+          designation: r.designation,
+          qualification: r.qualification,
+          specialization: r.specialization,
+          email: r.email,
+          linkedin: r.linkedin || '',
+          departmentRole: r.department_role || r.departmentRole || '',
+          portfolioUrl: r.portfolio_url || r.portfolioUrl || '',
+          experience: r.experience || '',
+          publications: r.publications || [],
+          awards: r.awards || [],
+          photoUrl: r.photo_url || r.photoUrl || '',
+          order: r.order || 0,
+        })));
+      }
     };
 
     fetchData();
