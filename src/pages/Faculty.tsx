@@ -168,7 +168,7 @@ export default function FacultyPage() {
           </div>
         </div>
 
-        {/* Faculty Grid or Board of Studies Grid */}
+        {/* Faculty Grid, Board of Studies Grid, or Disciplinary Committee Table */}
         {filter === 'Board of Studies' ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {boardMembers.map((m) => (
@@ -192,6 +192,37 @@ export default function FacultyPage() {
                 </div>
               </div>
             ))}
+          </div>
+        ) : filter === 'Disciplinary Committee' ? (
+          <div className="rounded-3xl bg-white p-6 sm:p-10 border border-slate-200/70 shadow-xs">
+            <div className="mb-8">
+              <h2 className="text-3xl font-[900] text-slate-900 tracking-tight">Disciplinary Committee</h2>
+              <div className="mt-3 h-1 w-16 bg-[#9d174d] rounded-full" />
+            </div>
+
+            <div className="overflow-hidden rounded-xl border border-slate-200 shadow-2xs">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#9d174d] text-white text-base font-bold">
+                    <th className="py-4 px-6 w-24 border-r border-white/20">S.No</th>
+                    <th className="py-4 px-6 border-r border-white/20">Name of the Member</th>
+                    <th className="py-4 px-6">Designation</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200/80 text-base">
+                  {committeeMembers.map((m, idx) => (
+                    <tr
+                      key={m.id}
+                      className={idx % 2 === 1 ? 'bg-slate-50/60 hover:bg-slate-100/70' : 'bg-white hover:bg-slate-50'}
+                    >
+                      <td className="py-4 px-6 font-semibold text-slate-600 border-r border-slate-200/60">{idx + 1}</td>
+                      <td className="py-4 px-6 font-bold text-slate-900 border-r border-slate-200/60">{m.name}</td>
+                      <td className="py-4 px-6 font-semibold text-slate-800">{m.designation}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : (
           <>
@@ -275,7 +306,7 @@ export default function FacultyPage() {
               </div>
             )}
             {/* Disciplinary Committee Section */}
-            {(filter === 'All' || filter === 'Disciplinary Committee') && committeeMembers.length > 0 && (
+            {filter === 'All' && committeeMembers.length > 0 && (
               <div className="mt-16 border-t border-gray-200 pt-16">
                 <div className="rounded-3xl bg-white p-6 sm:p-10 border border-slate-200/70 shadow-xs">
                   <div className="mb-8">
