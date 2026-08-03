@@ -23,6 +23,7 @@ import AdminNotices from './pages/admin/Notices';
 import AdminEvents from './pages/admin/Events';
 import AdminFaculty from './pages/admin/Faculty';
 import AdminBoardOfStudies from './pages/admin/BoardOfStudies';
+import AdminDisciplinaryCommittee from './pages/admin/DisciplinaryCommittee';
 import AdminResearch from './pages/admin/Research';
 import AdminMOUs from './pages/admin/MOUs';
 import AdminAchievements from './pages/admin/Achievements';
@@ -67,6 +68,7 @@ export default function App() {
             <Route path="/admin/events" element={<ProtectedRoute><AdminEvents /></ProtectedRoute>} />
             <Route path="/admin/faculty" element={<ProtectedRoute><AdminFaculty /></ProtectedRoute>} />
             <Route path="/admin/board-of-studies" element={<ProtectedRoute><AdminBoardOfStudies /></ProtectedRoute>} />
+            <Route path="/admin/disciplinary-committee" element={<ProtectedRoute><AdminDisciplinaryCommittee /></ProtectedRoute>} />
             <Route path="/admin/research" element={<ProtectedRoute><AdminResearch /></ProtectedRoute>} />
             <Route path="/admin/mous" element={<ProtectedRoute><AdminMOUs /></ProtectedRoute>} />
             <Route path="/admin/achievements" element={<ProtectedRoute><AdminAchievements /></ProtectedRoute>} />

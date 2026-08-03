@@ -12,7 +12,8 @@ import {
   Briefcase, 
   LogOut,
   ChevronRight,
-  GraduationCap
+  GraduationCap,
+  ShieldCheck
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 
@@ -22,6 +23,7 @@ const adminLinks = [
   { name: 'Events', href: '/admin/events', icon: Calendar },
   { name: 'Faculty', href: '/admin/faculty', icon: Users },
   { name: 'Board of Studies', href: '/admin/board-of-studies', icon: GraduationCap },
+  { name: 'Disciplinary Committee', href: '/admin/disciplinary-committee', icon: ShieldCheck },
   { name: 'Research', href: '/admin/research', icon: Briefcase },
   { name: 'MOUs', href: '/admin/mous', icon: Briefcase },
   { name: 'Achievements', href: '/admin/achievements', icon: Trophy },

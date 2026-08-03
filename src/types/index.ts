@@ -121,3 +121,11 @@ export interface MOU {
   order: number;
   createdAt?: string;
 }
+
+export interface CommitteeMember {
+  id: string;
+  name: string;
+  designation: string;
+  order: number;
+  createdAt?: string;
+}

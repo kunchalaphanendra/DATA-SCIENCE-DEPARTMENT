@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase';
-import { Faculty, BoardMember } from '@/src/types';
+import { Faculty, BoardMember, CommitteeMember } from '@/src/types';
 import { defaultFacultyData } from '@/src/data/facultyData';
 import { defaultBoardMembers } from '@/src/data/boardOfStudiesData';
-import { Search, X, Award, GraduationCap } from 'lucide-react';
+import { defaultDisciplinaryMembers } from '@/src/data/committeeData';
+import { Search, X, Award, GraduationCap, ShieldAlert } from 'lucide-react';
 
 export default function FacultyPage() {
   const [faculty, setFaculty] = useState<Faculty[]>([]);
   const [boardMembers, setBoardMembers] = useState<BoardMember[]>([]);
+  const [committeeMembers, setCommitteeMembers] = useState<CommitteeMember[]>([]);
   const [filter, setFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFaculty, setSelectedFaculty] = useState<Faculty | null>(null);
@@ -50,6 +52,17 @@ export default function FacultyPage() {
       return defaultBoardMembers;
     };
 
+    const loadCommitteeData = () => {
+      const stored = localStorage.getItem('vits_disciplinary_committee_v1');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (e) {}
+      }
+      return defaultDisciplinaryMembers;
+    };
+
     // Fetch Board of Studies members
     const fetchBOS = async () => {
       try {
@@ -73,10 +86,31 @@ export default function FacultyPage() {
         setBoardMembers(loadBOSData());
       }
     };
+
+    // Fetch Disciplinary Committee members
+    const fetchCommittee = async () => {
+      try {
+        const { data, error } = await supabase.from('disciplinary_committee').select('*').order('order', { ascending: true });
+        if (!error && data && data.length > 0) {
+          setCommitteeMembers(data.map(r => ({
+            id: r.id,
+            name: r.name,
+            designation: r.designation || 'Member',
+            order: r.order || 0,
+          })));
+        } else {
+          setCommitteeMembers(loadCommitteeData());
+        }
+      } catch (err) {
+        setCommitteeMembers(loadCommitteeData());
+      }
+    };
+
     fetchBOS();
+    fetchCommittee();
   }, []);
 
-  const designations = ['All', 'Professor', 'Associate Professor', 'Assistant Professor', 'Board of Studies'];
+  const designations = ['All', 'Professor', 'Associate Professor', 'Assistant Professor', 'Board of Studies', 'Disciplinary Committee'];
 
   const filteredFaculty = faculty.filter(f => {
     const name = f.name?.toLowerCase() || '';
@@ -234,6 +268,41 @@ export default function FacultyPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+            {/* Disciplinary Committee Section */}
+            {(filter === 'All' || filter === 'Disciplinary Committee') && committeeMembers.length > 0 && (
+              <div className="mt-16 border-t border-gray-200 pt-16">
+                <div className="rounded-3xl bg-white p-6 sm:p-10 border border-slate-200/70 shadow-xs">
+                  <div className="mb-8">
+                    <h2 className="text-3xl font-[900] text-slate-900 tracking-tight">Disciplinary Committee</h2>
+                    <div className="mt-3 h-1 w-16 bg-[#9d174d] rounded-full" />
+                  </div>
+
+                  <div className="overflow-hidden rounded-xl border border-slate-200 shadow-2xs">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-[#9d174d] text-white text-base font-bold">
+                          <th className="py-4 px-6 w-24 border-r border-white/20">S.No</th>
+                          <th className="py-4 px-6 border-r border-white/20">Name of the Member</th>
+                          <th className="py-4 px-6">Designation</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200/80 text-base">
+                        {committeeMembers.map((m, idx) => (
+                          <tr
+                            key={m.id}
+                            className={idx % 2 === 1 ? 'bg-slate-50/60 hover:bg-slate-100/70' : 'bg-white hover:bg-slate-50'}
+                          >
+                            <td className="py-4 px-6 font-semibold text-slate-600 border-r border-slate-200/60">{idx + 1}</td>
+                            <td className="py-4 px-6 font-bold text-slate-900 border-r border-slate-200/60">{m.name}</td>
+                            <td className="py-4 px-6 font-semibold text-slate-800">{m.designation}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}
