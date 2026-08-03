@@ -206,15 +206,19 @@ export default function FacultyPage() {
                   <p className="text-gray-800">{selectedFaculty.specialization || 'Not specified'}</p>
                 </div>
                 <div className="bg-[#f0fdf4] rounded-2xl p-6 border border-gray-100">
-                  <h4 className="font-bold text-gray-600 tracking-wider text-xs uppercase mb-4">Publications</h4>
-                  {selectedFaculty.publications && selectedFaculty.publications.length > 0 ? (
+                  <h4 className="font-bold text-gray-600 tracking-wider text-xs uppercase mb-3">Publications</h4>
+                  {typeof selectedFaculty.publications === 'string' && selectedFaculty.publications.trim() ? (
+                    <p className="text-gray-800 whitespace-pre-line">{selectedFaculty.publications}</p>
+                  ) : Array.isArray(selectedFaculty.publications) && selectedFaculty.publications.length > 0 ? (
                     <div className="space-y-3">
                       {selectedFaculty.publications.map((pub: any, idx: number) => (
                         <div key={idx} className="flex items-center gap-3">
-                          <span className={`flex items-center justify-center w-8 h-8 rounded-lg text-white font-bold text-sm shadow-sm ${idx % 2 === 0 ? 'bg-blue-600' : 'bg-green-600'}`}>
-                            {pub.badge}
-                          </span>
-                          <span className="text-gray-700">{pub.text}</span>
+                          {pub.badge && (
+                            <span className={`flex items-center justify-center w-8 h-8 rounded-lg text-white font-bold text-sm shadow-sm ${idx % 2 === 0 ? 'bg-blue-600' : 'bg-green-600'}`}>
+                              {pub.badge}
+                            </span>
+                          )}
+                          <span className="text-gray-700">{typeof pub === 'string' ? pub : pub.text || JSON.stringify(pub)}</span>
                         </div>
                       ))}
                     </div>
@@ -223,12 +227,14 @@ export default function FacultyPage() {
                   )}
                 </div>
                 <div className="bg-[#fff7ed] rounded-2xl p-6 border border-gray-100">
-                  <h4 className="font-bold text-gray-600 tracking-wider text-xs uppercase mb-4">Awards</h4>
-                  {selectedFaculty.awards && selectedFaculty.awards.length > 0 ? (
+                  <h4 className="font-bold text-gray-600 tracking-wider text-xs uppercase mb-3">Awards</h4>
+                  {typeof selectedFaculty.awards === 'string' && selectedFaculty.awards.trim() ? (
+                    <p className="text-gray-800 whitespace-pre-line">{selectedFaculty.awards}</p>
+                  ) : Array.isArray(selectedFaculty.awards) && selectedFaculty.awards.length > 0 ? (
                     <div className="flex flex-col gap-3">
-                      {selectedFaculty.awards.map((award: string, idx: number) => (
+                      {selectedFaculty.awards.map((award: any, idx: number) => (
                         <span key={idx} className="inline-flex w-fit bg-[#ea580c] text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-sm">
-                          {award}
+                          {typeof award === 'string' ? award : JSON.stringify(award)}
                         </span>
                       ))}
                     </div>

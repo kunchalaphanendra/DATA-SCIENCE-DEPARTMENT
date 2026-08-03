@@ -18,12 +18,29 @@ const facultySchema = z.object({
   departmentRole: z.string().optional(),
   portfolioUrl: z.string().url('Invalid URL').optional().or(z.literal('')),
   experience: z.string().optional(),
-  publications: z.array(z.object({ badge: z.string(), text: z.string() })).optional(),
-  awards: z.array(z.string()).optional(),
+  publications: z.string().optional(),
+  awards: z.string().optional(),
   order: z.number().min(0),
 });
 
 type FacultyFormData = z.infer<typeof facultySchema>;
+
+const formatAsString = (val: any): string => {
+  if (!val) return '';
+  if (typeof val === 'string') return val;
+  if (Array.isArray(val)) {
+    return val.map(item => {
+      if (typeof item === 'string') return item;
+      if (typeof item === 'object' && item !== null) {
+        if (item.text && item.badge) return `${item.badge}: ${item.text}`;
+        if (item.text) return item.text;
+        return JSON.stringify(item);
+      }
+      return String(item);
+    }).join(', ');
+  }
+  return String(val);
+};
 
 export default function AdminFaculty() {
   const [faculty, setFaculty] = useState<Faculty[]>([]);
@@ -41,8 +58,8 @@ export default function AdminFaculty() {
       departmentRole: '',
       portfolioUrl: '',
       experience: '',
-      publications: [],
-      awards: []
+      publications: '',
+      awards: ''
     }
   });
 
@@ -63,8 +80,8 @@ export default function AdminFaculty() {
         departmentRole: r.department_role || '',
         portfolioUrl: r.portfolio_url || '',
         experience: r.experience || '',
-        publications: r.publications || [],
-        awards: r.awards || [],
+        publications: r.publications || '',
+        awards: r.awards || '',
         photoUrl: r.photo_url || '',
         order: r.order || 0,
       })));
@@ -110,8 +127,8 @@ export default function AdminFaculty() {
         department_role: data.departmentRole || '',
         portfolio_url: data.portfolioUrl || '',
         experience: data.experience || '',
-        publications: data.publications || [],
-        awards: data.awards || [],
+        publications: data.publications || '',
+        awards: data.awards || '',
         photo_url: photoUrl,
         order: data.order,
         updated_at: new Date().toISOString(),
@@ -188,8 +205,8 @@ export default function AdminFaculty() {
       setValue('departmentRole', f.departmentRole || '');
       setValue('portfolioUrl', f.portfolioUrl || '');
       setValue('experience', f.experience || '');
-      setValue('publications', f.publications || []);
-      setValue('awards', f.awards || []);
+      setValue('publications', formatAsString(f.publications));
+      setValue('awards', formatAsString(f.awards));
       setValue('order', f.order);
       setImagePreview(f.photoUrl || null);
     } else {
@@ -378,33 +395,19 @@ export default function AdminFaculty() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Publications (JSON)</label>
-                  <textarea
-                    className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none font-mono text-sm"
-                    rows={3}
-                    placeholder='[{"badge":"13","text":"Scopus"}]'
-                    onChange={(e) => {
-                      try {
-                        const val = e.target.value ? JSON.parse(e.target.value) : [];
-                        setValue('publications', val);
-                      } catch (err) { /* ignore parse errors while typing */ }
-                    }}
-                    defaultValue={editingFaculty?.publications ? JSON.stringify(editingFaculty.publications) : '[]'}
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Publications</label>
+                  <input
+                    {...register('publications')}
+                    className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none"
+                    placeholder="e.g., 15+ Scopus Indexed Papers"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Awards (JSON)</label>
-                  <textarea
-                    className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none font-mono text-sm"
-                    rows={3}
-                    placeholder='["Award 1", "Award 2"]'
-                    onChange={(e) => {
-                      try {
-                        const val = e.target.value ? JSON.parse(e.target.value) : [];
-                        setValue('awards', val);
-                      } catch (err) { /* ignore parse errors while typing */ }
-                    }}
-                    defaultValue={editingFaculty?.awards ? JSON.stringify(editingFaculty.awards) : '[]'}
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Awards</label>
+                  <input
+                    {...register('awards')}
+                    className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none"
+                    placeholder="e.g., Best Researcher Award 2023"
                   />
                 </div>
               </div>

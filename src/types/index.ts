@@ -33,8 +33,8 @@ export interface Faculty {
   email: string;
   portfolioUrl?: string;
   experience?: string;
-  publications?: { badge: string; text: string }[];
-  awards?: string[];
+  publications?: string | { badge: string; text: string }[] | any;
+  awards?: string | string[] | any;
   linkedin?: string;
   photoUrl?: string;
   order: number;
