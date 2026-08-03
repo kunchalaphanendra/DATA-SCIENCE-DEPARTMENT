@@ -349,13 +349,6 @@ export default function AdminFaculty() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Specialization</label>
-                  <input
-                    {...register('specialization')}
-                    className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none"
-                  />
-                </div>
-                <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
                   <input
                     type="email"
@@ -363,9 +356,6 @@ export default function AdminFaculty() {
                     className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none"
                   />
                 </div>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Department Role</label>
                   <input
@@ -374,14 +364,25 @@ export default function AdminFaculty() {
                     placeholder="e.g., Head of Department"
                   />
                 </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">Portfolio URL</label>
-                  <input
-                    {...register('portfolioUrl')}
-                    className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none"
-                    placeholder="https://..."
-                  />
-                </div>
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Portfolio URL</label>
+                <input
+                  {...register('portfolioUrl')}
+                  className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none"
+                  placeholder="https://..."
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Specialization</label>
+                <textarea
+                  {...register('specialization')}
+                  rows={3}
+                  className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none"
+                  placeholder="e.g., Machine Learning&#10;Cloud Computing&#10;Data Science"
+                />
               </div>
 
               <div>

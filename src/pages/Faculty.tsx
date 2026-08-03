@@ -203,7 +203,7 @@ export default function FacultyPage() {
                 </div>
                 <div className="bg-[#faf5ff] rounded-2xl p-6 border border-gray-100">
                   <h4 className="font-bold text-gray-600 tracking-wider text-xs uppercase mb-3">Specialization</h4>
-                  <p className="text-gray-800">{selectedFaculty.specialization || 'Not specified'}</p>
+                  <p className="text-gray-800 whitespace-pre-line">{selectedFaculty.specialization || 'Not specified'}</p>
                 </div>
                 <div className="bg-[#f0fdf4] rounded-2xl p-6 border border-gray-100">
                   <h4 className="font-bold text-gray-600 tracking-wider text-xs uppercase mb-3">Publications</h4>
