@@ -22,6 +22,7 @@ import AdminDashboard from './pages/admin/Dashboard';
 import AdminNotices from './pages/admin/Notices';
 import AdminEvents from './pages/admin/Events';
 import AdminFaculty from './pages/admin/Faculty';
+import AdminBoardOfStudies from './pages/admin/BoardOfStudies';
 import AdminAchievements from './pages/admin/Achievements';
 import AdminPlacements from './pages/admin/Placements';
 import AdminGallery from './pages/admin/Gallery';
@@ -63,6 +64,7 @@ export default function App() {
             <Route path="/admin/notices" element={<ProtectedRoute><AdminNotices /></ProtectedRoute>} />
             <Route path="/admin/events" element={<ProtectedRoute><AdminEvents /></ProtectedRoute>} />
             <Route path="/admin/faculty" element={<ProtectedRoute><AdminFaculty /></ProtectedRoute>} />
+            <Route path="/admin/board-of-studies" element={<ProtectedRoute><AdminBoardOfStudies /></ProtectedRoute>} />
             <Route path="/admin/achievements" element={<ProtectedRoute><AdminAchievements /></ProtectedRoute>} />
             <Route path="/admin/placements" element={<ProtectedRoute><AdminPlacements /></ProtectedRoute>} />
             <Route path="/admin/gallery" element={<ProtectedRoute><AdminGallery /></ProtectedRoute>} />

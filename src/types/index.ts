@@ -90,3 +90,16 @@ export interface UserProfile {
   email: string;
   role: 'admin' | 'user';
 }
+
+export interface BoardMember {
+  id: string;
+  facultyId?: string;
+  name: string;
+  designation: string;
+  organization: string;
+  role: string;
+  email?: string;
+  photoUrl?: string;
+  order: number;
+  createdAt?: string;
+}

@@ -11,7 +11,8 @@ import {
   Image as ImageIcon, 
   Briefcase, 
   LogOut,
-  ChevronRight
+  ChevronRight,
+  GraduationCap
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 
@@ -20,6 +21,7 @@ const adminLinks = [
   { name: 'Notices', href: '/admin/notices', icon: Megaphone },
   { name: 'Events', href: '/admin/events', icon: Calendar },
   { name: 'Faculty', href: '/admin/faculty', icon: Users },
+  { name: 'Board of Studies', href: '/admin/board-of-studies', icon: GraduationCap },
   { name: 'Achievements', href: '/admin/achievements', icon: Trophy },
   { name: 'Gallery', href: '/admin/gallery', icon: ImageIcon },
   { name: 'Placements', href: '/admin/placements', icon: Briefcase },

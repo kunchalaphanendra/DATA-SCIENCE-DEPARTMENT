@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase';
-import { Faculty } from '@/src/types';
+import { Faculty, BoardMember } from '@/src/types';
 import { defaultFacultyData } from '@/src/data/facultyData';
-import { Search, X } from 'lucide-react';
+import { defaultBoardMembers } from '@/src/data/boardOfStudiesData';
+import { Search, X, Award, GraduationCap } from 'lucide-react';
 
 export default function FacultyPage() {
   const [faculty, setFaculty] = useState<Faculty[]>([]);
+  const [boardMembers, setBoardMembers] = useState<BoardMember[]>([]);
   const [filter, setFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFaculty, setSelectedFaculty] = useState<Faculty | null>(null);
@@ -34,9 +36,44 @@ export default function FacultyPage() {
           setFaculty(defaultFacultyData);
         }
       });
+
+    // Fetch Board of Studies members
+    const fetchBOS = async () => {
+      try {
+        const { data, error } = await supabase.from('board_of_studies').select('*').order('order', { ascending: true });
+        if (!error && data && data.length > 0) {
+          setBoardMembers(data.map(r => ({
+            id: r.id,
+            facultyId: r.faculty_id || '',
+            name: r.name,
+            designation: r.designation,
+            organization: r.organization || 'Vignan Institute of Technology & Science',
+            role: r.role || 'Member',
+            email: r.email || '',
+            photoUrl: r.photo_url || '',
+            order: r.order || 0,
+          })));
+        } else {
+          const stored = localStorage.getItem('vits_bos_members');
+          if (stored) {
+            setBoardMembers(JSON.parse(stored));
+          } else {
+            setBoardMembers(defaultBoardMembers);
+          }
+        }
+      } catch (err) {
+        const stored = localStorage.getItem('vits_bos_members');
+        if (stored) {
+          setBoardMembers(JSON.parse(stored));
+        } else {
+          setBoardMembers(defaultBoardMembers);
+        }
+      }
+    };
+    fetchBOS();
   }, []);
 
-  const designations = ['All', 'Professor', 'Associate Professor', 'Assistant Professor'];
+  const designations = ['All', 'Professor', 'Associate Professor', 'Assistant Professor', 'Board of Studies'];
 
   const filteredFaculty = faculty.filter(f => {
     const name = f.name?.toLowerCase() || '';
@@ -91,46 +128,113 @@ export default function FacultyPage() {
           </div>
         </div>
 
-        {/* Faculty Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredFaculty.map((f, i) => {
-            const bgColors = ['bg-blue-50/70', 'bg-purple-50/70', 'bg-blue-50/70', 'bg-purple-50/70'];
-            const cardBg = bgColors[i % bgColors.length];
-
-            return (
-              <div
-                key={f.id}
-                onClick={() => setSelectedFaculty(f)}
-                className={`group flex items-center p-4 rounded-[20px] shadow-sm border border-gray-100 cursor-pointer transition-all hover:shadow-md hover:-translate-y-1 ${cardBg}`}
-              >
-                <div className="flex-shrink-0 mr-5 relative">
-                  <div className="w-[84px] h-[84px] rounded-full overflow-hidden border-4 border-white shadow-sm">
+        {/* Faculty Grid or Board of Studies Grid */}
+        {filter === 'Board of Studies' ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {boardMembers.map((m) => (
+              <div key={m.id} className="flex items-center p-5 rounded-[20px] shadow-sm border border-gray-100 bg-white hover:shadow-md transition-all">
+                <div className="flex-shrink-0 mr-4">
+                  <div className="w-[72px] h-[72px] rounded-full overflow-hidden border-4 border-violet-100 shadow-sm">
                     <img
-                      src={f.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(f.name)}&background=random`}
-                      alt={f.name}
+                      src={m.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=random`}
+                      alt={m.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-bold text-gray-900 truncate group-hover:text-violet-900 transition-colors">{f.name}</h3>
-                  {f.departmentRole ? (
-                    <p className="text-[13px] font-semibold text-blue-600 truncate mt-0.5">{f.departmentRole}</p>
-                  ) : null}
-                  <p className="text-[13px] font-medium text-purple-700 truncate mt-0.5">{f.designation}</p>
-                  {(!f.departmentRole && f.specialization) && (
-                    <p className="text-[12px] text-gray-500 truncate mt-0.5">{f.specialization}</p>
-                  )}
+                  <span className="inline-block rounded-full bg-violet-100 text-violet-800 text-[11px] font-bold px-2.5 py-0.5 mb-1">
+                    {m.role}
+                  </span>
+                  <h3 className="text-base font-bold text-gray-900 truncate">{m.name}</h3>
+                  <p className="text-xs font-semibold text-blue-600 truncate">{m.designation}</p>
+                  <p className="text-xs text-gray-500 truncate mt-0.5">{m.organization}</p>
                 </div>
               </div>
-            );
-          })}
-        </div>
-
-        {filteredFaculty.length === 0 && (
-          <div className="py-20 text-center text-gray-500 italic bg-white rounded-2xl border border-gray-100 shadow-sm">
-            <p className="text-lg">No faculty members found matching your criteria.</p>
+            ))}
           </div>
+        ) : (
+          <>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredFaculty.map((f, i) => {
+                const bgColors = ['bg-blue-50/70', 'bg-purple-50/70', 'bg-blue-50/70', 'bg-purple-50/70'];
+                const cardBg = bgColors[i % bgColors.length];
+
+                return (
+                  <div
+                    key={f.id}
+                    onClick={() => setSelectedFaculty(f)}
+                    className={`group flex items-center p-4 rounded-[20px] shadow-sm border border-gray-100 cursor-pointer transition-all hover:shadow-md hover:-translate-y-1 ${cardBg}`}
+                  >
+                    <div className="flex-shrink-0 mr-5 relative">
+                      <div className="w-[84px] h-[84px] rounded-full overflow-hidden border-4 border-white shadow-sm">
+                        <img
+                          src={f.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(f.name)}&background=random`}
+                          alt={f.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold text-gray-900 truncate group-hover:text-violet-900 transition-colors">{f.name}</h3>
+                      {f.departmentRole ? (
+                        <p className="text-[13px] font-semibold text-blue-600 truncate mt-0.5">{f.departmentRole}</p>
+                      ) : null}
+                      <p className="text-[13px] font-medium text-purple-700 truncate mt-0.5">{f.designation}</p>
+                      {(!f.departmentRole && f.specialization) && (
+                        <p className="text-[12px] text-gray-500 truncate mt-0.5">{f.specialization}</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {filteredFaculty.length === 0 && (
+              <div className="py-20 text-center text-gray-500 italic bg-white rounded-2xl border border-gray-100 shadow-sm">
+                <p className="text-lg">No faculty members found matching your criteria.</p>
+              </div>
+            )}
+
+            {/* Board of Studies Section */}
+            {filter === 'All' && boardMembers.length > 0 && (
+              <div className="mt-20 border-t border-gray-200 pt-16">
+                <div className="mb-8 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-violet-900 flex items-center gap-2 justify-center sm:justify-start">
+                      <GraduationCap className="text-amber-500" size={28} />
+                      Board of Studies Members
+                    </h2>
+                    <p className="text-sm text-gray-600 mt-1">Distinguished faculty and experts guiding department curriculum & academic standards.</p>
+                  </div>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {boardMembers.map((m) => (
+                    <div key={m.id} className="flex items-center p-5 rounded-[20px] shadow-sm border border-gray-100 bg-white hover:shadow-md transition-all">
+                      <div className="flex-shrink-0 mr-4">
+                        <div className="w-[72px] h-[72px] rounded-full overflow-hidden border-4 border-violet-100 shadow-sm">
+                          <img
+                            src={m.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=random`}
+                            alt={m.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="inline-block rounded-full bg-violet-100 text-violet-800 text-[11px] font-bold px-2.5 py-0.5 mb-1">
+                          {m.role}
+                        </span>
+                        <h3 className="text-base font-bold text-gray-900 truncate">{m.name}</h3>
+                        <p className="text-xs font-semibold text-blue-600 truncate">{m.designation}</p>
+                        <p className="text-xs text-gray-500 truncate mt-0.5">{m.organization}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

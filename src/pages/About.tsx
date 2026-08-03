@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Target, Eye, Award, BookOpen, Sparkles, ShieldCheck, GraduationCap } from 'lucide-react';
+import { supabase } from '@/src/lib/supabase';
+import { BoardMember } from '@/src/types';
+import { defaultBoardMembers } from '@/src/data/boardOfStudiesData';
 
 const posData = [
   { code: 'PO1', title: 'Engineering Knowledge', description: 'Apply knowledge of Mathematics, Natural Science, Computing, Engineering Fundamentals and an Engineering Specialization to develop solutions for complex engineering problems.' },
@@ -29,7 +32,38 @@ const peosData = [
 ];
 
 export default function About() {
-  const [activeTab, setActiveTab] = useState<'about' | 'vision' | 'pos' | 'psos' | 'peos'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'vision' | 'pos' | 'psos' | 'peos' | 'bos'>('about');
+  const [boardMembers, setBoardMembers] = useState<BoardMember[]>([]);
+
+  useEffect(() => {
+    const fetchBOS = async () => {
+      try {
+        const { data, error } = await supabase.from('board_of_studies').select('*').order('order', { ascending: true });
+        if (!error && data && data.length > 0) {
+          setBoardMembers(data.map(r => ({
+            id: r.id,
+            facultyId: r.faculty_id || '',
+            name: r.name,
+            designation: r.designation,
+            organization: r.organization || 'Vignan Institute of Technology & Science',
+            role: r.role || 'Member',
+            email: r.email || '',
+            photoUrl: r.photo_url || '',
+            order: r.order || 0,
+          })));
+        } else {
+          const stored = localStorage.getItem('vits_bos_members');
+          if (stored) setBoardMembers(JSON.parse(stored));
+          else setBoardMembers(defaultBoardMembers);
+        }
+      } catch (err) {
+        const stored = localStorage.getItem('vits_bos_members');
+        if (stored) setBoardMembers(JSON.parse(stored));
+        else setBoardMembers(defaultBoardMembers);
+      }
+    };
+    fetchBOS();
+  }, []);
 
   return (
     <div className="bg-gradient-to-b from-slate-50/50 via-white to-slate-50/30 py-16 sm:py-20 text-slate-900">
@@ -55,6 +89,7 @@ export default function About() {
             { id: 'pos', label: 'POs' },
             { id: 'psos', label: 'PSOs' },
             { id: 'peos', label: 'PEOs' },
+            { id: 'bos', label: 'Board of Studies' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -243,6 +278,45 @@ export default function About() {
                     <span className="font-extrabold text-slate-900">{peo.code}: </span>
                     {peo.description}
                   </p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {activeTab === 'bos' && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="rounded-3xl bg-white p-6 sm:p-10 border border-slate-200/70 shadow-sm">
+            <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-[900] text-slate-900 flex items-center gap-2">
+                  <GraduationCap className="text-[#a21caf]" size={28} />
+                  Board of Studies Members
+                </h2>
+                <p className="text-sm text-slate-600 mt-1">Distinguished faculty & industry experts advising department curriculum & academic excellence.</p>
+              </div>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {boardMembers.map((m) => (
+                <div key={m.id} className="flex items-center p-5 rounded-[20px] shadow-sm border border-slate-100 bg-white hover:shadow-md transition-all">
+                  <div className="flex-shrink-0 mr-4">
+                    <div className="w-[72px] h-[72px] rounded-full overflow-hidden border-4 border-violet-100 shadow-sm">
+                      <img
+                        src={m.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=random`}
+                        alt={m.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="inline-block rounded-full bg-violet-100 text-violet-800 text-[11px] font-bold px-2.5 py-0.5 mb-1">
+                      {m.role}
+                    </span>
+                    <h3 className="text-base font-bold text-slate-900 truncate">{m.name}</h3>
+                    <p className="text-xs font-semibold text-blue-600 truncate">{m.designation}</p>
+                    <p className="text-xs text-slate-500 truncate mt-0.5">{m.organization}</p>
+                    {m.email && <p className="text-xs text-slate-400 truncate mt-0.5">{m.email}</p>}
+                  </div>
                 </div>
               ))}
             </div>
