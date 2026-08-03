@@ -22,6 +22,7 @@ const adminLinks = [
   { name: 'Events', href: '/admin/events', icon: Calendar },
   { name: 'Faculty', href: '/admin/faculty', icon: Users },
   { name: 'Board of Studies', href: '/admin/board-of-studies', icon: GraduationCap },
+  { name: 'Research', href: '/admin/research', icon: Briefcase },
   { name: 'Achievements', href: '/admin/achievements', icon: Trophy },
   { name: 'Gallery', href: '/admin/gallery', icon: ImageIcon },
   { name: 'Placements', href: '/admin/placements', icon: Briefcase },

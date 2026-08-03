@@ -103,3 +103,12 @@ export interface BoardMember {
   order: number;
   createdAt?: string;
 }
+
+export interface ResearchDocument {
+  id: string;
+  category: 'publications' | 'seminars';
+  academicYear: string;
+  documentUrl?: string;
+  order: number;
+  createdAt?: string;
+}
