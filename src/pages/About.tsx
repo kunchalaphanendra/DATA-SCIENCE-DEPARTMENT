@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Target, Eye, Award, BookOpen, Sparkles, ShieldCheck, GraduationCap } from 'lucide-react';
+import { Target, Eye, Award, BookOpen, Sparkles, ShieldCheck, GraduationCap, FlaskConical } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase';
 import { BoardMember } from '@/src/types';
 import { defaultBoardMembers } from '@/src/data/boardOfStudiesData';
+import LaboratoriesSection from '@/src/components/LaboratoriesSection';
 
 const posData = [
   { code: 'PO1', title: 'Engineering Knowledge', description: 'Apply knowledge of Mathematics, Natural Science, Computing, Engineering Fundamentals and an Engineering Specialization to develop solutions for complex engineering problems.' },
@@ -32,7 +33,7 @@ const peosData = [
 ];
 
 export default function About() {
-  const [activeTab, setActiveTab] = useState<'about' | 'vision' | 'pos' | 'psos' | 'peos' | 'bos'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'vision' | 'pos' | 'psos' | 'peos' | 'bos' | 'labs'>('about');
   const [boardMembers, setBoardMembers] = useState<BoardMember[]>([]);
 
   useEffect(() => {
@@ -99,6 +100,7 @@ export default function About() {
             { id: 'psos', label: 'PSOs' },
             { id: 'peos', label: 'PEOs' },
             { id: 'bos', label: 'Board of Studies' },
+            { id: 'labs', label: 'Laboratories' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -329,6 +331,12 @@ export default function About() {
                 </div>
               ))}
             </div>
+          </motion.div>
+        )}
+
+        {activeTab === 'labs' && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+            <LaboratoriesSection />
           </motion.div>
         )}
 

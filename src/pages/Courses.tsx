@@ -1,5 +1,7 @@
 import { BookOpen, Download, CheckCircle2, Sparkles, FileText, ArrowUpRight } from 'lucide-react';
 
+import LaboratoriesSection from '@/src/components/LaboratoriesSection';
+
 export default function Courses() {
   const curriculum = [
     { sem: 'Semester I', subjects: ['Matrices and Calculus', 'Engineering Chemistry', 'Programming for Problem Solving', 'Basic Electrical Engineering', 'Computer Aided Engineering Graphics', 'Elements of Computer Science & Engineering', 'Engineering Chemistry Laboratory', 'Programming for Problem Solving Laboratory', 'Basic Electrical Engineering Laboratory'] },
@@ -95,7 +97,7 @@ export default function Courses() {
         </div>
 
         {/* Curriculum Grid */}
-        <div>
+        <div className="mb-20">
           <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3">
             <div>
               <h2 className="text-2xl sm:text-3xl font-[900] text-[#0F172A] tracking-tight">Semester-wise Curriculum</h2>
@@ -137,6 +139,9 @@ export default function Courses() {
             ))}
           </div>
         </div>
+
+        {/* Laboratories Section */}
+        <LaboratoriesSection />
 
       </div>
     </div>
