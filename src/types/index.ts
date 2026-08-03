@@ -112,3 +112,12 @@ export interface ResearchDocument {
   order: number;
   createdAt?: string;
 }
+
+export interface MOU {
+  id: string;
+  name: string;
+  duration: string;
+  activities: string;
+  order: number;
+  createdAt?: string;
+}

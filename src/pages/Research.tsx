@@ -3,6 +3,7 @@ import { supabase } from '@/src/lib/supabase';
 import { ResearchDocument } from '@/src/types';
 import { defaultResearchDocuments } from '@/src/data/researchData';
 import { Beaker, FileText, Users, Lightbulb, ExternalLink } from 'lucide-react';
+import MOUsSection from '@/src/components/MOUsSection';
 
 export default function Research() {
   const [documents, setDocuments] = useState<ResearchDocument[]>([]);
@@ -166,6 +167,9 @@ export default function Research() {
             </table>
           </div>
         </div>
+
+        {/* 3. MOUs Section */}
+        <MOUsSection />
 
         {/* Research Areas */}
         <div>

@@ -5,6 +5,7 @@ import { supabase } from '@/src/lib/supabase';
 import { BoardMember } from '@/src/types';
 import { defaultBoardMembers } from '@/src/data/boardOfStudiesData';
 import LaboratoriesSection from '@/src/components/LaboratoriesSection';
+import MOUsSection from '@/src/components/MOUsSection';
 
 const posData = [
   { code: 'PO1', title: 'Engineering Knowledge', description: 'Apply knowledge of Mathematics, Natural Science, Computing, Engineering Fundamentals and an Engineering Specialization to develop solutions for complex engineering problems.' },
@@ -33,7 +34,7 @@ const peosData = [
 ];
 
 export default function About() {
-  const [activeTab, setActiveTab] = useState<'about' | 'vision' | 'pos' | 'psos' | 'peos' | 'bos' | 'labs'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'vision' | 'pos' | 'psos' | 'peos' | 'bos' | 'labs' | 'mous'>('about');
   const [boardMembers, setBoardMembers] = useState<BoardMember[]>([]);
 
   useEffect(() => {
@@ -101,6 +102,7 @@ export default function About() {
             { id: 'peos', label: 'PEOs' },
             { id: 'bos', label: 'Board of Studies' },
             { id: 'labs', label: 'Laboratories' },
+            { id: 'mous', label: 'MOUs' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -337,6 +339,12 @@ export default function About() {
         {activeTab === 'labs' && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
             <LaboratoriesSection />
+          </motion.div>
+        )}
+
+        {activeTab === 'mous' && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+            <MOUsSection />
           </motion.div>
         )}
 
