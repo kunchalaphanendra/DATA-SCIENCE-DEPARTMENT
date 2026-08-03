@@ -386,8 +386,9 @@ export default function AdminFaculty() {
 
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">About</label>
-                <input
+                <textarea
                   {...register('experience')}
+                  rows={3}
                   className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none"
                   placeholder="e.g., Dedicated academician and researcher with over 20 years of experience"
                 />
@@ -396,18 +397,20 @@ export default function AdminFaculty() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Publications</label>
-                  <input
+                  <textarea
                     {...register('publications')}
+                    rows={3}
                     className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none"
-                    placeholder="e.g., 15+ Scopus Indexed Papers"
+                    placeholder="e.g., 15+ Scopus Indexed Papers&#10;IEEE Journal Publication 2023"
                   />
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-700">Awards</label>
-                  <input
+                  <textarea
                     {...register('awards')}
+                    rows={3}
                     className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none"
-                    placeholder="e.g., Best Researcher Award 2023"
+                    placeholder="e.g., Best Researcher Award 2023&#10;Excellence in Teaching 2021"
                   />
                 </div>
               </div>
