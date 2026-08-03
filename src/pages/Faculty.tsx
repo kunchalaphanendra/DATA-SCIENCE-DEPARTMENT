@@ -198,7 +198,7 @@ export default function FacultyPage() {
 
               <div className="mt-12 grid md:grid-cols-2 gap-6">
                 <div className="bg-[#f8f9fc] rounded-2xl p-6 border border-gray-100">
-                  <h4 className="font-bold text-gray-600 tracking-wider text-xs uppercase mb-3">Experience</h4>
+                  <h4 className="font-bold text-gray-600 tracking-wider text-xs uppercase mb-3">About</h4>
                   <p className="text-gray-800">{selectedFaculty.experience || 'Not specified'}</p>
                 </div>
                 <div className="bg-[#faf5ff] rounded-2xl p-6 border border-gray-100">

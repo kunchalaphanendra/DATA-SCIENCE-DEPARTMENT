@@ -385,11 +385,11 @@ export default function AdminFaculty() {
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">Experience</label>
+                <label className="mb-1 block text-sm font-medium text-gray-700">About</label>
                 <input
                   {...register('experience')}
                   className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none"
-                  placeholder="e.g., 17 years of teaching experience"
+                  placeholder="e.g., Dedicated academician and researcher with over 20 years of experience"
                 />
               </div>
 
