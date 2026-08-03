@@ -136,32 +136,35 @@ export default function FacultyPage() {
           <div className="mx-auto mt-4 h-1 w-24 bg-amber-500 rounded-full" />
         </div>
 
-        {/* Filters */}
-        <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-center md:justify-center">
-          <div className="flex flex-wrap justify-center gap-3">
-            {designations.map((d) => (
-              <button
-                key={d}
-                onClick={() => setFilter(d)}
-                className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-all shadow-sm ${
-                  filter === d
-                    ? 'bg-violet-900 text-white ring-2 ring-violet-900 ring-offset-2'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-violet-900 border border-gray-200'
-                }`}
-              >
-                {d}
-              </button>
-            ))}
-          </div>
-          <div className="relative w-full max-w-md mx-auto md:mx-0">
+        {/* Filters & Search */}
+        <div className="mb-12 space-y-6">
+          {/* Centered Search Bar */}
+          <div className="relative max-w-md mx-auto">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
               placeholder="Search by name or specialization..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-full border border-gray-200 py-3 pl-12 pr-4 shadow-sm focus:border-violet-900 focus:ring-1 focus:ring-violet-900 focus:outline-none transition-shadow"
+              className="w-full rounded-full border border-gray-200/90 bg-white py-3 pl-12 pr-4 text-sm shadow-xs focus:border-violet-900 focus:ring-2 focus:ring-violet-900/20 focus:outline-none transition-all"
             />
+          </div>
+
+          {/* Centered Filter Pills */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
+            {designations.map((d) => (
+              <button
+                key={d}
+                onClick={() => setFilter(d)}
+                className={`rounded-full px-5 py-2.5 text-sm font-bold transition-all shadow-2xs ${
+                  filter === d
+                    ? 'bg-violet-900 text-white shadow-md shadow-violet-900/20 scale-105'
+                    : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-violet-900 border border-gray-200/80'
+                }`}
+              >
+                {d}
+              </button>
+            ))}
           </div>
         </div>
 
