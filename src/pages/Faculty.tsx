@@ -37,6 +37,19 @@ export default function FacultyPage() {
         }
       });
 
+    const loadBOSData = () => {
+      const stored = localStorage.getItem('vits_bos_members_v3');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length >= defaultBoardMembers.length) {
+            return parsed;
+          }
+        } catch (e) {}
+      }
+      return defaultBoardMembers;
+    };
+
     // Fetch Board of Studies members
     const fetchBOS = async () => {
       try {
@@ -54,20 +67,10 @@ export default function FacultyPage() {
             order: r.order || 0,
           })));
         } else {
-          const stored = localStorage.getItem('vits_bos_members');
-          if (stored) {
-            setBoardMembers(JSON.parse(stored));
-          } else {
-            setBoardMembers(defaultBoardMembers);
-          }
+          setBoardMembers(loadBOSData());
         }
       } catch (err) {
-        const stored = localStorage.getItem('vits_bos_members');
-        if (stored) {
-          setBoardMembers(JSON.parse(stored));
-        } else {
-          setBoardMembers(defaultBoardMembers);
-        }
+        setBoardMembers(loadBOSData());
       }
     };
     fetchBOS();

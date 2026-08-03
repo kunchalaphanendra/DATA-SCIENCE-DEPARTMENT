@@ -67,6 +67,19 @@ export default function AdminBoardOfStudies() {
     }
   };
 
+  const loadBOSData = () => {
+    const stored = localStorage.getItem('vits_bos_members_v3');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length >= defaultBoardMembers.length) {
+          return parsed;
+        }
+      } catch (e) {}
+    }
+    return defaultBoardMembers;
+  };
+
   // Fetch Board Members
   const fetchBoardMembers = async () => {
     try {
@@ -89,21 +102,11 @@ export default function AdminBoardOfStudies() {
           createdAt: r.created_at,
         })));
       } else {
-        const stored = localStorage.getItem('vits_bos_members');
-        if (stored) {
-          setBoardMembers(JSON.parse(stored));
-        } else {
-          setBoardMembers(defaultBoardMembers);
-        }
+        setBoardMembers(loadBOSData());
       }
     } catch (err) {
       console.warn('Fallback to local state for Board of Studies members');
-      const stored = localStorage.getItem('vits_bos_members');
-      if (stored) {
-        setBoardMembers(JSON.parse(stored));
-      } else {
-        setBoardMembers(defaultBoardMembers);
-      }
+      setBoardMembers(loadBOSData());
     }
   };
 
@@ -199,7 +202,7 @@ export default function AdminBoardOfStudies() {
       }
       updatedList.sort((a, b) => a.order - b.order);
       setBoardMembers(updatedList);
-      localStorage.setItem('vits_bos_members', JSON.stringify(updatedList));
+      localStorage.setItem('vits_bos_members_v3', JSON.stringify(updatedList));
 
       closeModal();
       await fetchBoardMembers();
@@ -219,7 +222,7 @@ export default function AdminBoardOfStudies() {
 
       const updated = boardMembers.filter(m => m.id !== id);
       setBoardMembers(updated);
-      localStorage.setItem('vits_bos_members', JSON.stringify(updated));
+      localStorage.setItem('vits_bos_members_v3', JSON.stringify(updated));
       toast.success('Member removed');
     } catch (error: any) {
       toast.error(error.message || 'Delete failed');
