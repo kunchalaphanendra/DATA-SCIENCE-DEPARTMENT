@@ -389,10 +389,12 @@ export default function AdminBoardOfStudies() {
                     className="w-full rounded-lg border border-gray-200 px-4 py-2 focus:border-violet-900 focus:outline-none text-sm"
                   >
                     <option value="Chairman">Chairman</option>
+                    <option value="Faculty">Faculty</option>
+                    <option value="University Nominee">University Nominee</option>
+                    <option value="Subject Expert">Subject Expert</option>
+                    <option value="Representative from Industry">Representative from Industry</option>
+                    <option value="College Alumni">College Alumni</option>
                     <option value="Internal Member">Internal Member</option>
-                    <option value="University Nominee / Academic Expert">University Nominee / Academic Expert</option>
-                    <option value="Industry Expert">Industry Expert</option>
-                    <option value="Alumni Representative">Alumni Representative</option>
                     <option value="Member Secretary">Member Secretary</option>
                   </select>
                 </div>
