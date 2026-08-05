@@ -148,8 +148,8 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6732',
     studentName: '20891A6732',
-    company: 'HCL Savantis',
-    package: '4.6 LPA',
+    company: 'Dexterity',
+    package: '1.8 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6732&background=0F172A&color=F59E0B&font-size=0.33',
   },
