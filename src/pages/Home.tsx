@@ -6,14 +6,14 @@ import { supabase } from '@/src/lib/supabase';
 import { Notice, Event, Achievement, Placement, Faculty } from '@/src/types';
 import { defaultAchievementsData } from '@/src/data/achievementsData';
 import { defaultFacultyData } from '@/src/data/facultyData';
-import { defaultPlacementsData } from '@/src/data/placementsData';
+import { loadMergedPlacements } from '@/src/lib/placementsStorage';
 import { cn } from '@/src/lib/utils';
 
 export default function Home() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
-  const [placements, setPlacements] = useState<Placement[]>(defaultPlacementsData.slice(0, 8));
+  const [placements, setPlacements] = useState<Placement[]>(() => loadMergedPlacements([]).slice(0, 8));
   const [faculty, setFaculty] = useState<Faculty[]>(defaultFacultyData.slice(0, 6));
 
   // Static Previews
@@ -64,28 +64,7 @@ export default function Home() {
           photoUrl: r.photo_url || r.photoUrl || '',
         })));
       }
-      if (p.data) {
-        const map = new Map<string, Placement>();
-        defaultPlacementsData.forEach(item => map.set(item.studentName, item));
-        p.data.forEach(r => {
-          const studentName = r.student_name || r.studentName || '';
-          const defaultYear = studentName.startsWith('21') ? '2021' : studentName.startsWith('20') ? '2020' : '2020';
-          const existing = map.get(studentName);
-          if (existing) {
-            map.set(studentName, {
-              ...existing,
-              id: r.id || existing.id,
-              company: r.company || existing.company,
-              package: r.package || existing.package,
-              batchYear: r.batch_year || r.year || existing.batchYear || defaultYear,
-              photoUrl: r.photo_url || r.photoUrl || existing.photoUrl,
-            });
-          }
-        });
-        setPlacements(Array.from(map.values()).slice(0, 8));
-      } else {
-        setPlacements(defaultPlacementsData.slice(0, 8));
-      }
+      setPlacements(loadMergedPlacements(p.data || []).slice(0, 8));
       if (f.data && f.data.length > 0) {
         setFaculty(f.data.map(r => ({
           id: r.id,

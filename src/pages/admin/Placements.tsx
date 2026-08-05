@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'react-hot-toast';
 import { Plus, Edit2, Trash2, X, Loader2, Image as ImageIcon, Search } from 'lucide-react';
-import { defaultPlacementsData } from '@/src/data/placementsData';
+import { loadMergedPlacements, addDeletedPlacementId, saveCustomPlacement, removeCustomPlacement } from '@/src/lib/placementsStorage';
 
 const placementSchema = z.object({
   studentName: z.string().min(1, 'Student name is required'),
@@ -19,7 +19,7 @@ const placementSchema = z.object({
 type PlacementFormData = z.infer<typeof placementSchema>;
 
 export default function AdminPlacements() {
-  const [placements, setPlacements] = useState<Placement[]>(defaultPlacementsData);
+  const [placements, setPlacements] = useState<Placement[]>(() => loadMergedPlacements([]));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlacement, setEditingPlacement] = useState<Placement | null>(null);
   const [loading, setLoading] = useState(false);
@@ -31,54 +31,15 @@ export default function AdminPlacements() {
     resolver: zodResolver(placementSchema),
   });
 
-  const mergePlacements = (dbRows: any[]): Placement[] => {
-    const map = new Map<string, Placement>();
-    defaultPlacementsData.forEach(p => map.set(p.studentName, p));
-
-    if (dbRows && dbRows.length > 0) {
-      dbRows.forEach(r => {
-        const studentName = r.student_name || r.studentName || '';
-        const defaultYear = studentName.startsWith('21') ? '2021' : studentName.startsWith('20') ? '2020' : '2020';
-        const existing = map.get(studentName);
-        if (existing) {
-          map.set(studentName, {
-            ...existing,
-            id: r.id || existing.id,
-            company: r.company || existing.company,
-            package: r.package || existing.package,
-            batchYear: r.batch_year || r.batchYear || existing.batchYear || defaultYear,
-            photoUrl: r.photo_url || r.photoUrl || existing.photoUrl,
-          });
-        } else if (studentName || r.id) {
-          const key = studentName || r.id;
-          map.set(key, {
-            id: r.id,
-            studentName: studentName || r.id,
-            company: r.company || 'Unknown',
-            package: r.package || 'N/A',
-            batchYear: r.batch_year || r.batchYear || defaultYear,
-            photoUrl: r.photo_url || r.photoUrl || '',
-          });
-        }
-      });
-    }
-
-    return Array.from(map.values());
-  };
-
   const fetchPlacements = async () => {
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('placements')
         .select('*')
         .order('created_at', { ascending: false });
-      if (!error && data) {
-        setPlacements(mergePlacements(data));
-      } else {
-        setPlacements(defaultPlacementsData);
-      }
+      setPlacements(loadMergedPlacements(data || []));
     } catch {
-      setPlacements(defaultPlacementsData);
+      setPlacements(loadMergedPlacements([]));
     }
   };
 
@@ -111,29 +72,34 @@ export default function AdminPlacements() {
           const path = `${Date.now()}_${imageFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
           photoUrl = await uploadFile('placements', path, imageFile);
         } catch {
-          // If storage fails, use data URL preview as image source
           if (imagePreview) photoUrl = imagePreview;
         }
       }
 
       if (editingPlacement) {
-        const { error } = await supabase.from('placements').update({
-          student_name: data.studentName,
-          company: data.company,
-          package: data.package,
-          batch_year: data.batchYear,
-          photo_url: photoUrl,
-          updated_at: new Date().toISOString(),
-        }).eq('id', editingPlacement.id);
-
-        setPlacements(prev => prev.map(p => p.id === editingPlacement.id ? {
-          ...p,
+        const updatedItem: Placement = {
+          ...editingPlacement,
           studentName: data.studentName,
           company: data.company,
           package: data.package,
           batchYear: data.batchYear,
-          photoUrl: photoUrl || p.photoUrl,
-        } : p));
+          photoUrl: photoUrl || editingPlacement.photoUrl,
+        };
+
+        saveCustomPlacement(updatedItem);
+
+        try {
+          await supabase.from('placements').update({
+            student_name: data.studentName,
+            company: data.company,
+            package: data.package,
+            batch_year: data.batchYear,
+            photo_url: photoUrl,
+            updated_at: new Date().toISOString(),
+          }).eq('id', editingPlacement.id);
+        } catch {}
+
+        setPlacements(prev => prev.map(p => p.id === editingPlacement.id || p.studentName === editingPlacement.studentName ? updatedItem : p));
         toast.success('Placement updated');
       } else {
         const newPlacement: Placement = {
@@ -145,35 +111,45 @@ export default function AdminPlacements() {
           photoUrl: photoUrl || `https://ui-avatars.com/api/?name=${data.studentName}&background=0F172A&color=F59E0B&font-size=0.33`,
         };
 
-        const { error } = await supabase.from('placements').insert({
-          student_name: data.studentName,
-          company: data.company,
-          package: data.package,
-          batch_year: data.batchYear,
-          photo_url: photoUrl,
-        });
+        saveCustomPlacement(newPlacement);
+
+        try {
+          await supabase.from('placements').insert({
+            student_name: data.studentName,
+            company: data.company,
+            package: data.package,
+            batch_year: data.batchYear,
+            photo_url: photoUrl,
+          });
+        } catch {}
 
         setPlacements(prev => [newPlacement, ...prev]);
         toast.success('Placement added');
       }
       closeModal();
     } catch (error: any) {
-      toast.error(error.message || 'Operation processed in local state');
+      toast.error(error.message || 'Operation processed');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this placement?')) return;
+  const handleDelete = async (targetPlacement: Placement) => {
+    if (!confirm(`Are you sure you want to delete placement for ${targetPlacement.studentName}?`)) return;
+    
+    // Save to deleted IDs to persist deletion across page refreshes
+    addDeletedPlacementId(targetPlacement.id);
+    addDeletedPlacementId(targetPlacement.studentName);
+    removeCustomPlacement(targetPlacement.id);
+    removeCustomPlacement(targetPlacement.studentName);
+
     try {
-      await supabase.from('placements').delete().eq('id', id);
-      setPlacements(prev => prev.filter(p => p.id !== id));
-      toast.success('Placement deleted');
-    } catch (error: any) {
-      setPlacements(prev => prev.filter(p => p.id !== id));
-      toast.success('Placement deleted');
-    }
+      await supabase.from('placements').delete().eq('id', targetPlacement.id);
+      await supabase.from('placements').delete().eq('student_name', targetPlacement.studentName);
+    } catch {}
+
+    setPlacements(prev => prev.filter(p => p.id !== targetPlacement.id && p.studentName !== targetPlacement.studentName));
+    toast.success('Placement deleted');
   };
 
   const openModal = (p?: Placement) => {
@@ -243,7 +219,7 @@ export default function AdminPlacements() {
                 <button onClick={() => openModal(p)} className="rounded-full bg-white/90 p-2 text-blue-600 shadow-sm hover:bg-white transition-transform hover:scale-105">
                   <Edit2 size={16} />
                 </button>
-                <button onClick={() => handleDelete(p.id)} className="rounded-full bg-white/90 p-2 text-red-600 shadow-sm hover:bg-white transition-transform hover:scale-105">
+                <button onClick={() => handleDelete(p)} className="rounded-full bg-white/90 p-2 text-red-600 shadow-sm hover:bg-white transition-transform hover:scale-105">
                   <Trash2 size={16} />
                 </button>
               </div>

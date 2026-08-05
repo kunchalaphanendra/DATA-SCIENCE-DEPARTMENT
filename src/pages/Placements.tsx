@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase';
 import { Placement, PlacementStats, CompanyLogo } from '@/src/types';
 import { TrendingUp, Award, Building2, Briefcase } from 'lucide-react';
-import { defaultPlacementsData } from '@/src/data/placementsData';
+import { loadMergedPlacements } from '@/src/lib/placementsStorage';
 
 export default function Placements() {
-  const [placements, setPlacements] = useState<Placement[]>(defaultPlacementsData);
+  const [placements, setPlacements] = useState<Placement[]>(() => loadMergedPlacements([]));
   const [stats, setStats] = useState<PlacementStats[]>([]);
   const [logos, setLogos] = useState<CompanyLogo[]>([]);
   const [selectedYear, setSelectedYear] = useState('All');
@@ -15,40 +15,9 @@ export default function Placements() {
     // Placements
     supabase.from('placements').select('*').order('created_at', { ascending: false })
       .then(({ data }) => {
-        if (data) {
-          const map = new Map<string, Placement>();
-          defaultPlacementsData.forEach(p => map.set(p.studentName, p));
-          data.forEach(r => {
-            const studentName = r.student_name || r.studentName || '';
-            const defaultYear = studentName.startsWith('21') ? '2021' : studentName.startsWith('20') ? '2020' : '2020';
-            const existing = map.get(studentName);
-            if (existing) {
-              map.set(studentName, {
-                ...existing,
-                id: r.id || existing.id,
-                company: r.company || existing.company,
-                package: r.package || existing.package,
-                batchYear: r.batch_year || r.batchYear || existing.batchYear || defaultYear,
-                photoUrl: r.photo_url || r.photoUrl || existing.photoUrl,
-              });
-            } else if (studentName || r.id) {
-              const key = studentName || r.id;
-              map.set(key, {
-                id: r.id,
-                studentName: studentName || r.id,
-                company: r.company || 'Unknown',
-                package: r.package || 'N/A',
-                batchYear: r.batch_year || r.batchYear || defaultYear,
-                photoUrl: r.photo_url || r.photoUrl || '',
-              });
-            }
-          });
-          setPlacements(Array.from(map.values()));
-        } else {
-          setPlacements(defaultPlacementsData);
-        }
+        setPlacements(loadMergedPlacements(data || []));
       })
-      .catch(() => setPlacements(defaultPlacementsData));
+      .catch(() => setPlacements(loadMergedPlacements([])));
 
     // Stats (optional table - won't break if missing)
     supabase.from('placement_stats').select('*').order('year', { ascending: false })
