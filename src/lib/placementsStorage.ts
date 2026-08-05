@@ -14,6 +14,8 @@ try {
   }
 } catch {}
 
+const cleanKey = (str: any) => String(str || '').replace(/\s+/g, '').toUpperCase();
+
 export function getDeletedPlacementIds(): string[] {
   try {
     const raw = localStorage.getItem(DELETED_KEY);
@@ -27,7 +29,7 @@ export function addDeletedPlacementId(idOrName: string) {
   try {
     if (!idOrName) return;
     const deleted = getDeletedPlacementIds();
-    const cleanStr = String(idOrName).trim();
+    const cleanStr = cleanKey(idOrName);
     if (cleanStr && !deleted.includes(cleanStr)) {
       deleted.push(cleanStr);
       localStorage.setItem(DELETED_KEY, JSON.stringify(deleted));
@@ -49,8 +51,8 @@ export function getCustomPlacements(): Placement[] {
 export function saveCustomPlacement(placement: Placement) {
   try {
     const custom = getCustomPlacements();
-    const cleanName = placement.studentName.trim().toUpperCase();
-    const idx = custom.findIndex(p => p.id === placement.id || p.studentName.trim().toUpperCase() === cleanName);
+    const cleanName = cleanKey(placement.studentName);
+    const idx = custom.findIndex(p => cleanKey(p.id) === cleanKey(placement.id) || cleanKey(p.studentName) === cleanName);
     if (idx >= 0) {
       custom[idx] = { ...placement, studentName: cleanName };
     } else {
@@ -65,10 +67,10 @@ export function saveCustomPlacement(placement: Placement) {
 export function removeCustomPlacement(idOrName: string) {
   try {
     if (!idOrName) return;
-    const targetStr = String(idOrName).toUpperCase().trim();
+    const targetStr = cleanKey(idOrName);
     const custom = getCustomPlacements().filter(p => 
-      String(p.id).toUpperCase().trim() !== targetStr && 
-      String(p.studentName).toUpperCase().trim() !== targetStr
+      cleanKey(p.id) !== targetStr && 
+      cleanKey(p.studentName) !== targetStr
     );
     localStorage.setItem(CUSTOM_KEY, JSON.stringify(custom));
   } catch (e) {
@@ -92,15 +94,17 @@ export function resetPlacementStorage() {
 export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
   const map = new Map<string, Placement>();
 
-  // 1. Load default data (Keyed by normalized student roll number)
+  // 1. Load default data (Keyed by cleaned student roll number)
   defaultPlacementsData.forEach(p => {
-    const normKey = p.studentName.trim().toUpperCase();
-    map.set(normKey, { ...p, studentName: normKey });
+    const normKey = cleanKey(p.studentName);
+    if (normKey) {
+      map.set(normKey, { ...p, studentName: normKey });
+    }
   });
 
   // 2. Merge custom localStorage edits/additions
   getCustomPlacements().forEach(p => {
-    const normKey = (p.studentName || p.id || '').trim().toUpperCase();
+    const normKey = cleanKey(p.studentName || p.id);
     if (normKey) {
       const existing = map.get(normKey);
       map.set(normKey, {
@@ -117,7 +121,7 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
   // 3. Merge Supabase rows
   if (supabaseRows && supabaseRows.length > 0) {
     supabaseRows.forEach(r => {
-      const normKey = (r.student_name || r.studentName || r.id || '').toString().trim().toUpperCase();
+      const normKey = cleanKey(r.student_name || r.studentName || r.id);
       if (!normKey) return;
       const existing = map.get(normKey);
       map.set(normKey, {
@@ -133,29 +137,29 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
 
   // 4. Filter out deleted items cleanly
   const deletedArray = getDeletedPlacementIds();
-  const deletedSet = new Set(deletedArray.map(d => String(d).toUpperCase().trim()));
+  const deletedSet = new Set(deletedArray.map(d => cleanKey(d)));
 
   const result: Placement[] = [];
   
   for (const [key, p] of map.entries()) {
-    const keyNorm = String(key).toUpperCase().trim();
-    const idNorm = String(p.id).toUpperCase().trim();
-    const nameNorm = String(p.studentName).toUpperCase().trim();
+    const keyNorm = cleanKey(key);
+    const idNorm = cleanKey(p.id);
+    const nameNorm = cleanKey(p.studentName);
 
     if (!deletedSet.has(keyNorm) && !deletedSet.has(idNorm) && !deletedSet.has(nameNorm)) {
       result.push(p);
     }
   }
 
-  // 5. Strict deduplication pass by student roll number
+  // 5. Strict deduplication pass by cleaned roll number
   const uniquePlacements: Placement[] = [];
   const seenRollNumbers = new Set<string>();
 
   for (const item of result) {
-    const rollNo = item.studentName.trim().toUpperCase();
-    if (!seenRollNumbers.has(rollNo)) {
+    const rollNo = cleanKey(item.studentName);
+    if (rollNo && !seenRollNumbers.has(rollNo)) {
       seenRollNumbers.add(rollNo);
-      uniquePlacements.push(item);
+      uniquePlacements.push({ ...item, studentName: rollNo });
     }
   }
 
