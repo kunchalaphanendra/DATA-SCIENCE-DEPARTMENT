@@ -63,7 +63,15 @@ export default function Placements() {
         <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold text-violet-900">Placements</h1>
           <p className="mt-4 text-gray-600">Connecting our talent with global opportunities.</p>
-          <div className="mx-auto mt-4 h-1 w-24 bg-amber-500" />
+          <a 
+            href="https://vignanits.ac.in/placements/" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-500 hover:bg-amber-600 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:scale-105"
+          >
+            Visit Official Placement Site ↗
+          </a>
+          <div className="mx-auto mt-6 h-1 w-24 bg-amber-500" />
         </div>
 
         {/* Stats Grid */}
@@ -116,22 +124,33 @@ export default function Placements() {
         {/* Placed Students Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {displayedPlacements.map((p) => (
-            <div key={p.id} className="group overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100 transition-all hover:shadow-md">
-              <div className="aspect-square overflow-hidden bg-gray-100">
+            <a 
+              key={p.id} 
+              href="https://vignanits.ac.in/placements/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-xl hover:border-amber-400 hover:-translate-y-1.5 cursor-pointer"
+            >
+              <div className="relative h-64 overflow-hidden bg-slate-900/5 group-hover:bg-slate-950 transition-colors duration-500">
                 <img
                   src={p.photoUrl || `https://picsum.photos/seed/${p.id}/400/400`}
                   alt={p.studentName}
-                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                  className="h-full w-full object-cover object-top transition-all duration-500 group-hover:scale-110 group-hover:object-contain"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end justify-center p-3">
+                  <span className="text-[11px] font-bold text-amber-400 bg-slate-900/90 px-3 py-1 rounded-full border border-amber-500/30 flex items-center gap-1 shadow-md">
+                    Visit Placement Site ↗
+                  </span>
+                </div>
               </div>
               <div className="p-4 text-center">
-                <h3 className="font-bold text-violet-900">{p.studentName}</h3>
+                <h3 className="font-bold text-violet-900 group-hover:text-amber-600 transition-colors">{p.studentName}</h3>
                 <p className="text-sm font-bold text-amber-600">{p.company}</p>
                 <div className="mt-2 text-xs text-gray-500">
                   Package: <span className="font-bold text-gray-700">{p.package}</span>
                 </div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
 

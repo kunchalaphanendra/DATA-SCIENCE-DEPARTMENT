@@ -349,19 +349,24 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4.5">
             {placements.map((p) => (
-              <div 
+              <Link 
                 key={p.id} 
-                className="group flex flex-col justify-between overflow-hidden rounded-[20px] bg-white border border-[#0F172A]/[0.08] shadow-[0_6px_20px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#F59E0B] hover:shadow-[0_14px_30px_rgba(245,158,11,0.15)] cursor-pointer"
+                to="/placements"
+                className="group flex flex-col justify-between overflow-hidden rounded-[20px] bg-white border border-[#0F172A]/[0.08] shadow-[0_6px_20px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#F59E0B] hover:shadow-[0_16px_35px_rgba(245,158,11,0.2)] cursor-pointer"
               >
-                <div className="relative h-32 sm:h-36 w-full overflow-hidden bg-slate-100">
+                <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-slate-900/5 group-hover:bg-slate-950 transition-colors duration-500">
                   <img
                     src={p.photoUrl || `https://picsum.photos/seed/${p.id}/400/400`}
                     alt={p.studentName}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-cover object-top transition-all duration-500 group-hover:scale-110 group-hover:object-contain"
                     loading="eager"
                     decoding="async"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end justify-center p-3">
+                    <span className="text-[11px] font-bold text-amber-400 bg-slate-900/90 px-3 py-1 rounded-full border border-amber-500/30 flex items-center gap-1 shadow-md">
+                      Go to Placement Site →
+                    </span>
+                  </div>
                 </div>
                 <div className="p-3.5 bg-white flex flex-col gap-1.5">
                   <div className="flex items-center justify-between">
@@ -375,7 +380,7 @@ export default function Home() {
                   </div>
                   <h3 className="text-sm font-[900] text-[#0F172A] group-hover:text-[#F59E0B] transition-colors">{p.studentName}</h3>
                 </div>
-              </div>
+              </Link>
             ))}
             {placements.length === 0 && (
               <div className="col-span-4 py-12 text-center text-slate-500 italic">No placements found.</div>
@@ -409,19 +414,24 @@ export default function Home() {
 
           <div className="grid gap-8 md:grid-cols-3">
             {events.map((event) => (
-              <div 
+              <Link 
                 key={event.id} 
+                to="/events"
                 className="group flex flex-col justify-between overflow-hidden rounded-[24px] bg-slate-800/80 border border-slate-700/60 backdrop-blur-md shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-[#F59E0B]/60 hover:shadow-[0_20px_45px_rgba(245,158,11,0.18)] cursor-pointer"
               >
-                <div className="relative h-48 w-full overflow-hidden bg-slate-900">
+                <div className="relative h-52 sm:h-56 w-full overflow-hidden bg-slate-950 transition-colors duration-500">
                   <img
                     src={event.imageUrl || `https://picsum.photos/seed/${event.id}/600/400`}
                     alt={event.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:object-contain"
                     loading="eager"
                     decoding="async"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-90 flex items-end justify-center p-4">
+                    <span className="text-xs font-bold text-amber-400 bg-slate-900/90 px-3 py-1 rounded-full border border-amber-500/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center gap-1 shadow-lg">
+                      View Event Page →
+                    </span>
+                  </div>
                 </div>
                 <div className="p-7 flex flex-col gap-3">
                   <div className="inline-flex items-center gap-1.5 rounded-full bg-[#F59E0B]/20 border border-[#F59E0B]/30 px-3 py-1 text-xs font-bold text-[#F59E0B] w-max">
@@ -431,7 +441,7 @@ export default function Home() {
                   <h3 className="text-xl font-[900] text-white group-hover:text-[#F59E0B] transition-colors leading-snug">{event.title}</h3>
                   <p className="line-clamp-2 text-sm text-slate-300 font-normal leading-relaxed">{event.description}</p>
                 </div>
-              </div>
+              </Link>
             ))}
             {events.length === 0 && (
               <div className="col-span-3 py-12 text-center text-slate-400 italic">No events found.</div>
