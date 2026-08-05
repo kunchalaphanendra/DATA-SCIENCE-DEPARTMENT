@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase';
 import { Placement, PlacementStats, CompanyLogo } from '@/src/types';
 import { TrendingUp, Award, Building2, Briefcase } from 'lucide-react';
+import { defaultPlacementsData } from '@/src/data/placementsData';
 
 export default function Placements() {
-  const [placements, setPlacements] = useState<Placement[]>([]);
+  const [placements, setPlacements] = useState<Placement[]>(defaultPlacementsData);
   const [stats, setStats] = useState<PlacementStats[]>([]);
   const [logos, setLogos] = useState<CompanyLogo[]>([]);
   const [selectedYear, setSelectedYear] = useState('All');
@@ -14,15 +15,20 @@ export default function Placements() {
     // Placements
     supabase.from('placements').select('*').order('created_at', { ascending: false })
       .then(({ data }) => {
-        if (data) setPlacements(data.map(r => ({
-          id: r.id,
-          studentName: r.student_name,
-          company: r.company,
-          package: r.package,
-          batchYear: r.batch_year,
-          photoUrl: r.photo_url || '',
-        })));
-      });
+        if (data && data.length > 0) {
+          setPlacements(data.map(r => ({
+            id: r.id,
+            studentName: r.student_name || r.studentName,
+            company: r.company,
+            package: r.package,
+            batchYear: r.batch_year || r.batchYear || '2024',
+            photoUrl: r.photo_url || r.photoUrl || '',
+          })));
+        } else {
+          setPlacements(defaultPlacementsData);
+        }
+      })
+      .catch(() => setPlacements(defaultPlacementsData));
 
     // Stats (optional table - won't break if missing)
     supabase.from('placement_stats').select('*').order('year', { ascending: false })

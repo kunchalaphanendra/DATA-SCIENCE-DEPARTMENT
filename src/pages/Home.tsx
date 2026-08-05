@@ -6,13 +6,14 @@ import { supabase } from '@/src/lib/supabase';
 import { Notice, Event, Achievement, Placement, Faculty } from '@/src/types';
 import { defaultAchievementsData } from '@/src/data/achievementsData';
 import { defaultFacultyData } from '@/src/data/facultyData';
+import { defaultPlacementsData } from '@/src/data/placementsData';
 import { cn } from '@/src/lib/utils';
 
 export default function Home() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
-  const [placements, setPlacements] = useState<Placement[]>([]);
+  const [placements, setPlacements] = useState<Placement[]>(defaultPlacementsData.slice(0, 8));
   const [faculty, setFaculty] = useState<Faculty[]>(defaultFacultyData.slice(0, 6));
 
   // Static Previews
@@ -63,15 +64,17 @@ export default function Home() {
           photoUrl: r.photo_url || r.photoUrl || '',
         })));
       }
-      if (p.data) {
+      if (p.data && p.data.length > 0) {
         setPlacements(p.data.map(r => ({
           id: r.id,
           studentName: r.student_name || r.studentName,
           company: r.company,
           package: r.package,
-          year: r.year,
+          batchYear: r.batch_year || r.year || '2024',
           photoUrl: r.photo_url || r.photoUrl || '',
         })));
+      } else {
+        setPlacements(defaultPlacementsData.slice(0, 8));
       }
       if (f.data && f.data.length > 0) {
         setFaculty(f.data.map(r => ({
