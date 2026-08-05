@@ -47,6 +47,13 @@ export default function AdminDashboard() {
       }
     };
     fetchStats();
+
+    window.addEventListener('focus', fetchStats);
+    window.addEventListener('storage', fetchStats);
+    return () => {
+      window.removeEventListener('focus', fetchStats);
+      window.removeEventListener('storage', fetchStats);
+    };
   }, []);
 
   const statCards = [

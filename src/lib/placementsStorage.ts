@@ -17,12 +17,13 @@ export function addDeletedPlacementId(idOrName: string) {
   try {
     if (!idOrName) return;
     const deleted = getDeletedPlacementIds();
-    if (!deleted.includes(idOrName)) {
-      deleted.push(idOrName);
+    const cleanStr = String(idOrName).trim();
+    if (cleanStr && !deleted.includes(cleanStr)) {
+      deleted.push(cleanStr);
       localStorage.setItem(DELETED_KEY, JSON.stringify(deleted));
     }
   } catch (e) {
-    console.error('Error saving deletion', e);
+    console.error('Error saving placement deletion', e);
   }
 }
 
@@ -53,7 +54,11 @@ export function saveCustomPlacement(placement: Placement) {
 export function removeCustomPlacement(idOrName: string) {
   try {
     if (!idOrName) return;
-    const custom = getCustomPlacements().filter(p => p.id !== idOrName && p.studentName !== idOrName);
+    const targetStr = String(idOrName).toLowerCase().trim();
+    const custom = getCustomPlacements().filter(p => 
+      String(p.id).toLowerCase().trim() !== targetStr && 
+      String(p.studentName).toLowerCase().trim() !== targetStr
+    );
     localStorage.setItem(CUSTOM_KEY, JSON.stringify(custom));
   } catch (e) {
     console.error('Error removing custom placement', e);
@@ -76,12 +81,17 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
   defaultPlacementsData.forEach(p => map.set(p.studentName, p));
 
   // 2. Merge custom localStorage edits/additions
-  getCustomPlacements().forEach(p => map.set(p.studentName, p));
+  getCustomPlacements().forEach(p => {
+    if (p.studentName) {
+      map.set(p.studentName, p);
+    }
+  });
 
   // 3. Merge Supabase rows
   if (supabaseRows && supabaseRows.length > 0) {
     supabaseRows.forEach(r => {
       const studentName = r.student_name || r.studentName || '';
+      if (!studentName) return;
       const existing = map.get(studentName);
       if (existing) {
         map.set(studentName, {
@@ -92,11 +102,10 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
           batchYear: r.batch_year || r.batchYear || existing.batchYear || '2024',
           photoUrl: r.photo_url || r.photoUrl || existing.photoUrl,
         });
-      } else if (studentName || r.id) {
-        const key = studentName || r.id;
-        map.set(key, {
-          id: r.id,
-          studentName: studentName || r.id,
+      } else {
+        map.set(studentName, {
+          id: r.id || `p-${studentName}`,
+          studentName: studentName,
           company: r.company || 'Unknown',
           package: r.package || 'N/A',
           batchYear: r.batch_year || r.batchYear || '2024',
@@ -106,20 +115,20 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
     });
   }
 
-  // 4. Filter out deleted items
-  const deletedSet = new Set(getDeletedPlacementIds());
+  // 4. Filter out deleted items cleanly with case-insensitive checking
+  const deletedArray = getDeletedPlacementIds();
+  const deletedSet = new Set(deletedArray.map(d => String(d).toLowerCase().trim()));
+
   const result: Placement[] = [];
   
   for (const [key, p] of map.entries()) {
-    if (!deletedSet.has(key) && !deletedSet.has(p.id) && !deletedSet.has(p.studentName)) {
+    const keyLower = String(key).toLowerCase().trim();
+    const idLower = String(p.id).toLowerCase().trim();
+    const nameLower = String(p.studentName).toLowerCase().trim();
+
+    if (!deletedSet.has(keyLower) && !deletedSet.has(idLower) && !deletedSet.has(nameLower)) {
       result.push(p);
     }
-  }
-
-  // Self-healing fallback: if deletedSet wiped out ALL records, reset storage to restore all 35 records
-  if (result.length === 0 && defaultPlacementsData.length > 0) {
-    resetPlacementStorage();
-    return defaultPlacementsData;
   }
 
   return result;

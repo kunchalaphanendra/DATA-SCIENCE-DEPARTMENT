@@ -17,12 +17,13 @@ export function addDeletedAchievementId(idOrTitle: string) {
   try {
     if (!idOrTitle) return;
     const deleted = getDeletedAchievementIds();
-    if (!deleted.includes(idOrTitle)) {
-      deleted.push(idOrTitle);
+    const cleanStr = String(idOrTitle).trim();
+    if (cleanStr && !deleted.includes(cleanStr)) {
+      deleted.push(cleanStr);
       localStorage.setItem(DELETED_KEY, JSON.stringify(deleted));
     }
   } catch (e) {
-    console.error('Error saving deletion', e);
+    console.error('Error saving achievement deletion', e);
   }
 }
 
@@ -53,7 +54,11 @@ export function saveCustomAchievement(item: Achievement) {
 export function removeCustomAchievement(idOrTitle: string) {
   try {
     if (!idOrTitle) return;
-    const custom = getCustomAchievements().filter(a => a.id !== idOrTitle && a.title !== idOrTitle);
+    const targetStr = String(idOrTitle).toLowerCase().trim();
+    const custom = getCustomAchievements().filter(a => 
+      String(a.id).toLowerCase().trim() !== targetStr && 
+      String(a.title).toLowerCase().trim() !== targetStr
+    );
     localStorage.setItem(CUSTOM_KEY, JSON.stringify(custom));
   } catch (e) {
     console.error('Error removing custom achievement', e);
@@ -107,20 +112,20 @@ export function loadMergedAchievements(supabaseRows: any[] = []): Achievement[] 
     });
   }
 
-  // 4. Filter out deleted items
-  const deletedSet = new Set(getDeletedAchievementIds());
+  // 4. Filter out deleted items with case-insensitive matching
+  const deletedArray = getDeletedAchievementIds();
+  const deletedSet = new Set(deletedArray.map(d => String(d).toLowerCase().trim()));
+
   const result: Achievement[] = [];
   
   for (const [key, a] of map.entries()) {
-    if (!deletedSet.has(key) && !deletedSet.has(a.id) && !deletedSet.has(a.title)) {
+    const keyLower = String(key).toLowerCase().trim();
+    const idLower = String(a.id).toLowerCase().trim();
+    const titleLower = String(a.title).toLowerCase().trim();
+
+    if (!deletedSet.has(keyLower) && !deletedSet.has(idLower) && !deletedSet.has(titleLower)) {
       result.push(a);
     }
-  }
-
-  // Self-healing fallback: if deletedSet wiped out ALL records, reset storage to restore default records
-  if (result.length === 0 && defaultAchievementsData.length > 0) {
-    resetAchievementStorage();
-    return defaultAchievementsData;
   }
 
   return result;
