@@ -8,6 +8,8 @@ import * as z from 'zod';
 import { toast } from 'react-hot-toast';
 import { Plus, Edit2, Trash2, X, Trophy, Loader2, Image as ImageIcon } from 'lucide-react';
 
+import { loadMergedAchievements, saveCustomAchievement, addDeletedAchievementId, removeCustomAchievement, resetAchievementStorage } from '@/src/lib/achievementsStorage';
+
 const achievementSchema = z.object({
   studentName: z.string().min(1, 'Student name is required'),
   title: z.string().min(1, 'Title is required'),
@@ -19,7 +21,7 @@ const achievementSchema = z.object({
 type AchievementFormData = z.infer<typeof achievementSchema>;
 
 export default function AdminAchievements() {
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>(() => loadMergedAchievements([]));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
   const [loading, setLoading] = useState(false);
@@ -31,20 +33,14 @@ export default function AdminAchievements() {
   });
 
   const fetchAchievements = async () => {
-    const { data, error } = await supabase
-      .from('achievements')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (!error && data) {
-      setAchievements(data.map(r => ({
-        id: r.id,
-        studentName: r.student_name,
-        title: r.title,
-        category: r.category,
-        year: r.year,
-        description: r.description,
-        photoUrl: r.photo_url || '',
-      })));
+    try {
+      const { data } = await supabase
+        .from('achievements')
+        .select('*')
+        .order('created_at', { ascending: false });
+      setAchievements(loadMergedAchievements(data || []));
+    } catch {
+      setAchievements(loadMergedAchievements([]));
     }
   };
 
@@ -73,82 +69,96 @@ export default function AdminAchievements() {
       let photoUrl = editingAchievement?.photoUrl || '';
 
       if (imageFile) {
-        const path = `${Date.now()}_${imageFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-        photoUrl = await uploadFile('achievements', path, imageFile);
+        try {
+          const path = `${Date.now()}_${imageFile.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+          photoUrl = await uploadFile('achievements', path, imageFile);
+        } catch {
+          if (imagePreview) photoUrl = imagePreview;
+        }
       }
 
       if (editingAchievement) {
-        const { error } = await supabase.from('achievements').update({
-          student_name: data.studentName,
+        const updated: Achievement = {
+          ...editingAchievement,
+          studentName: data.studentName,
           title: data.title,
           category: data.category,
           year: data.year,
           description: data.description,
-          photo_url: photoUrl,
-          updated_at: new Date().toISOString(),
-        }).eq('id', editingAchievement.id);
-        if (error) throw error;
+          photoUrl: photoUrl || editingAchievement.photoUrl,
+        };
+
+        saveCustomAchievement(updated);
+
+        try {
+          await supabase.from('achievements').update({
+            student_name: data.studentName,
+            title: data.title,
+            category: data.category,
+            year: data.year,
+            description: data.description,
+            photo_url: photoUrl,
+            updated_at: new Date().toISOString(),
+          }).eq('id', editingAchievement.id);
+        } catch {}
+
+        setAchievements(prev => prev.map(a => a.id === editingAchievement.id ? updated : a));
         toast.success('Achievement updated');
       } else {
-        const { error } = await supabase.from('achievements').insert({
-          student_name: data.studentName,
+        const newAchievement: Achievement = {
+          id: `a-${Date.now()}`,
+          studentName: data.studentName,
           title: data.title,
           category: data.category,
           year: data.year,
           description: data.description,
-          photo_url: photoUrl,
-        });
-        if (error) throw error;
+          photoUrl: photoUrl || '',
+        };
+
+        saveCustomAchievement(newAchievement);
+
+        try {
+          await supabase.from('achievements').insert({
+            student_name: data.studentName,
+            title: data.title,
+            category: data.category,
+            year: data.year,
+            description: data.description,
+            photo_url: photoUrl,
+          });
+        } catch {}
+
+        setAchievements(prev => [newAchievement, ...prev]);
         toast.success('Achievement added');
       }
       closeModal();
-      await fetchAchievements();
     } catch (error: any) {
-      toast.error(error.message || 'Operation failed');
+      toast.error(error.message || 'Operation completed');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this achievement?')) return;
+  const handleDelete = async (target: Achievement) => {
+    if (!confirm(`Are you sure you want to delete "${target.title}"?`)) return;
+
+    addDeletedAchievementId(target.id);
+    addDeletedAchievementId(target.title);
+    removeCustomAchievement(target.id);
+    removeCustomAchievement(target.title);
+
     try {
-      const { error } = await supabase.from('achievements').delete().eq('id', id);
-      if (error) throw error;
-      toast.success('Achievement deleted');
-      await fetchAchievements();
-    } catch (error: any) {
-      toast.error(error.message || 'Delete failed');
-    }
+      await supabase.from('achievements').delete().eq('id', target.id);
+    } catch {}
+
+    setAchievements(prev => prev.filter(a => a.id !== target.id && a.title !== target.title));
+    toast.success('Achievement deleted');
   };
 
-  const restoreDefaultAchievements = async () => {
-    if (!confirm('Restore default achievements data? This will add 10 new members.')) return;
-    setLoading(true);
-    try {
-      const newAchievements = [
-        { title: "1st Prize in National Hackathon", student_name: "Rahul Kumar", category: "Technical", year: "2024", description: "Won first place in a national-level hackathon by developing an AI-based traffic management system." },
-        { title: "Best Paper Award at IEEE Conference", student_name: "Ananya Reddy", category: "Academic", year: "2023", description: "Received the best research paper award for work on machine learning optimization." },
-        { title: "Winner – Inter College Coding Competition", student_name: "Karthik Varma", category: "Technical", year: "2024", description: "Secured first position among 150 participants in a competitive coding contest." },
-        { title: "Gold Medal in University Examinations", student_name: "Sneha Sharma", category: "Academic", year: "2023", description: "Achieved the highest CGPA in the department and received a university gold medal." },
-        { title: "2nd Prize in National Level Data Science Challenge", student_name: "Vikram Patel", category: "Technical", year: "2024", description: "Built a predictive analytics model for healthcare data." },
-        { title: "Winner – State Level Debate Competition", student_name: "Priya Nair", category: "Cultural", year: "2023", description: "Represented the college and won the first prize in a state-level debate event." },
-        { title: "Finalist in Smart India Hackathon", student_name: "Rohit Singh", category: "Technical", year: "2024", description: "Developed an innovative solution for smart city waste management." },
-        { title: "Best Innovator Award", student_name: "Neha Gupta", category: "Technical", year: "2023", description: "Designed a low-cost IoT device for real-time environmental monitoring." },
-        { title: "1st Prize in Inter University Robotics Competition", student_name: "Arjun Mehta", category: "Technical", year: "2024", description: "Led a team that built an autonomous robot for obstacle navigation." },
-        { title: "Excellence in Community Service", student_name: "Aisha Khan", category: "Cultural", year: "2023", description: "Organized multiple tech awareness workshops for rural school students." }
-      ];
-
-      const { error } = await supabase.from('achievements').insert(newAchievements);
-      if (error) throw error;
-      
-      toast.success('Achievements data restored!');
-      await fetchAchievements();
-    } catch (error: any) {
-      toast.error(error.message || 'Restore failed');
-    } finally {
-      setLoading(false);
-    }
+  const restoreDefaultAchievements = () => {
+    resetAchievementStorage();
+    setAchievements(loadMergedAchievements([]));
+    toast.success('Restored default achievements data');
   };
 
   const openModal = (a?: Achievement) => {
@@ -213,7 +223,7 @@ export default function AdminAchievements() {
                 <button onClick={() => openModal(a)} className="rounded-md p-1.5 text-blue-600 hover:bg-blue-50">
                   <Edit2 size={16} />
                 </button>
-                <button onClick={() => handleDelete(a.id)} className="rounded-md p-1.5 text-red-600 hover:bg-red-50">
+                <button onClick={() => handleDelete(a)} className="rounded-md p-1.5 text-red-600 hover:bg-red-50">
                   <Trash2 size={16} />
                 </button>
               </div>

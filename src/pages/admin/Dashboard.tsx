@@ -4,7 +4,7 @@ import { supabase } from '@/src/lib/supabase';
 import { Megaphone, Calendar, Users, Trophy, Image as ImageIcon, Briefcase } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { loadMergedPlacements } from '@/src/lib/placementsStorage';
-import { defaultAchievementsData } from '@/src/data/achievementsData';
+import { loadMergedAchievements } from '@/src/lib/achievementsStorage';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -30,13 +30,13 @@ export default function AdminDashboard() {
         ]);
 
         const mergedPlacements = loadMergedPlacements(p.data || []);
-        const mergedAchievementsCount = Math.max(a.data?.length || 0, defaultAchievementsData.length);
+        const mergedAchievements = loadMergedAchievements(a.data || []);
 
         setStats({
           notices: n.count ?? 0,
           events: e.count ?? 0,
           faculty: f.count ?? 0,
-          achievements: mergedAchievementsCount,
+          achievements: mergedAchievements.length,
           gallery: g.count ?? 0,
           placements: mergedPlacements.length,
         });

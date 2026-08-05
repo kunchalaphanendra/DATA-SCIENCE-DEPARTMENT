@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase';
 import { Achievement } from '@/src/types';
-import { defaultAchievementsData } from '@/src/data/achievementsData';
+import { loadMergedAchievements } from '@/src/lib/achievementsStorage';
 import { Trophy, Calendar, Search } from 'lucide-react';
 
 export default function Achievements() {
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>(() => loadMergedAchievements([]));
   const [filter, setFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleCount, setVisibleCount] = useState(9); // Initial load count
@@ -13,20 +13,9 @@ export default function Achievements() {
   useEffect(() => {
     supabase.from('achievements').select('*').order('created_at', { ascending: false })
       .then(({ data }) => {
-        if (data && data.length > 0) {
-          setAchievements(data.map(r => ({
-            id: r.id,
-            studentName: r.student_name,
-            title: r.title,
-            category: r.category,
-            year: r.year,
-            description: r.description,
-            photoUrl: r.photo_url || '',
-          })));
-        } else {
-          setAchievements(defaultAchievementsData);
-        }
-      });
+        setAchievements(loadMergedAchievements(data || []));
+      })
+      .catch(() => setAchievements(loadMergedAchievements([])));
   }, []);
 
   const categories = ['All', 'Academic', 'Sports', 'Technical', 'Cultural'];
