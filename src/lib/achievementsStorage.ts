@@ -128,5 +128,17 @@ export function loadMergedAchievements(supabaseRows: any[] = []): Achievement[] 
     }
   }
 
-  return result;
+  // 5. Strict deduplication pass by achievement title
+  const uniqueAchievements: Achievement[] = [];
+  const seenTitles = new Set<string>();
+
+  for (const item of result) {
+    const normTitle = item.title.trim().toLowerCase();
+    if (!seenTitles.has(normTitle)) {
+      seenTitles.add(normTitle);
+      uniqueAchievements.push(item);
+    }
+  }
+
+  return uniqueAchievements;
 }

@@ -39,11 +39,12 @@ export function getCustomPlacements(): Placement[] {
 export function saveCustomPlacement(placement: Placement) {
   try {
     const custom = getCustomPlacements();
-    const idx = custom.findIndex(p => p.id === placement.id || p.studentName === placement.studentName);
+    const cleanName = placement.studentName.trim().toUpperCase();
+    const idx = custom.findIndex(p => p.id === placement.id || p.studentName.trim().toUpperCase() === cleanName);
     if (idx >= 0) {
-      custom[idx] = placement;
+      custom[idx] = { ...placement, studentName: cleanName };
     } else {
-      custom.unshift(placement);
+      custom.unshift({ ...placement, studentName: cleanName });
     }
     localStorage.setItem(CUSTOM_KEY, JSON.stringify(custom));
   } catch (e) {
@@ -54,10 +55,10 @@ export function saveCustomPlacement(placement: Placement) {
 export function removeCustomPlacement(idOrName: string) {
   try {
     if (!idOrName) return;
-    const targetStr = String(idOrName).toLowerCase().trim();
+    const targetStr = String(idOrName).toUpperCase().trim();
     const custom = getCustomPlacements().filter(p => 
-      String(p.id).toLowerCase().trim() !== targetStr && 
-      String(p.studentName).toLowerCase().trim() !== targetStr
+      String(p.id).toUpperCase().trim() !== targetStr && 
+      String(p.studentName).toUpperCase().trim() !== targetStr
     );
     localStorage.setItem(CUSTOM_KEY, JSON.stringify(custom));
   } catch (e) {
@@ -77,24 +78,33 @@ export function resetPlacementStorage() {
 export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
   const map = new Map<string, Placement>();
 
-  // 1. Load default data
-  defaultPlacementsData.forEach(p => map.set(p.studentName, p));
+  // 1. Load default data (Keyed by normalized student roll number)
+  defaultPlacementsData.forEach(p => {
+    const normKey = p.studentName.trim().toUpperCase();
+    map.set(normKey, { ...p, studentName: normKey });
+  });
 
   // 2. Merge custom localStorage edits/additions
   getCustomPlacements().forEach(p => {
-    if (p.studentName) {
-      map.set(p.studentName, p);
+    const normKey = (p.studentName || p.id || '').trim().toUpperCase();
+    if (normKey) {
+      const existing = map.get(normKey);
+      map.set(normKey, {
+        ...existing,
+        ...p,
+        studentName: (p.studentName || normKey).trim().toUpperCase(),
+      });
     }
   });
 
   // 3. Merge Supabase rows
   if (supabaseRows && supabaseRows.length > 0) {
     supabaseRows.forEach(r => {
-      const studentName = r.student_name || r.studentName || '';
-      if (!studentName) return;
-      const existing = map.get(studentName);
+      const normKey = (r.student_name || r.studentName || r.id || '').toString().trim().toUpperCase();
+      if (!normKey) return;
+      const existing = map.get(normKey);
       if (existing) {
-        map.set(studentName, {
+        map.set(normKey, {
           ...existing,
           id: r.id || existing.id,
           company: r.company || existing.company,
@@ -103,9 +113,9 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
           photoUrl: r.photo_url || r.photoUrl || existing.photoUrl,
         });
       } else {
-        map.set(studentName, {
-          id: r.id || `p-${studentName}`,
-          studentName: studentName,
+        map.set(normKey, {
+          id: r.id || `p-${normKey}`,
+          studentName: normKey,
           company: r.company || 'Unknown',
           package: r.package || 'N/A',
           batchYear: r.batch_year || r.batchYear || '2024',
@@ -115,21 +125,33 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
     });
   }
 
-  // 4. Filter out deleted items cleanly with case-insensitive checking
+  // 4. Filter out deleted items cleanly
   const deletedArray = getDeletedPlacementIds();
-  const deletedSet = new Set(deletedArray.map(d => String(d).toLowerCase().trim()));
+  const deletedSet = new Set(deletedArray.map(d => String(d).toUpperCase().trim()));
 
   const result: Placement[] = [];
   
   for (const [key, p] of map.entries()) {
-    const keyLower = String(key).toLowerCase().trim();
-    const idLower = String(p.id).toLowerCase().trim();
-    const nameLower = String(p.studentName).toLowerCase().trim();
+    const keyNorm = String(key).toUpperCase().trim();
+    const idNorm = String(p.id).toUpperCase().trim();
+    const nameNorm = String(p.studentName).toUpperCase().trim();
 
-    if (!deletedSet.has(keyLower) && !deletedSet.has(idLower) && !deletedSet.has(nameLower)) {
+    if (!deletedSet.has(keyNorm) && !deletedSet.has(idNorm) && !deletedSet.has(nameNorm)) {
       result.push(p);
     }
   }
 
-  return result;
+  // 5. Strict deduplication pass by student roll number
+  const uniquePlacements: Placement[] = [];
+  const seenRollNumbers = new Set<string>();
+
+  for (const item of result) {
+    const rollNo = item.studentName.trim().toUpperCase();
+    if (!seenRollNumbers.has(rollNo)) {
+      seenRollNumbers.add(rollNo);
+      uniquePlacements.push(item);
+    }
+  }
+
+  return uniquePlacements;
 }
