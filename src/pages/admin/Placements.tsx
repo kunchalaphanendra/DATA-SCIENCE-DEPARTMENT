@@ -38,6 +38,7 @@ export default function AdminPlacements() {
     if (dbRows && dbRows.length > 0) {
       dbRows.forEach(r => {
         const studentName = r.student_name || r.studentName || '';
+        const defaultYear = studentName.startsWith('21') ? '2021' : studentName.startsWith('20') ? '2020' : '2020';
         const existing = map.get(studentName);
         if (existing) {
           map.set(studentName, {
@@ -45,7 +46,7 @@ export default function AdminPlacements() {
             id: r.id || existing.id,
             company: r.company || existing.company,
             package: r.package || existing.package,
-            batchYear: r.batch_year || r.batchYear || existing.batchYear,
+            batchYear: r.batch_year || r.batchYear || existing.batchYear || defaultYear,
             photoUrl: r.photo_url || r.photoUrl || existing.photoUrl,
           });
         } else if (studentName || r.id) {
@@ -55,7 +56,7 @@ export default function AdminPlacements() {
             studentName: studentName || r.id,
             company: r.company || 'Unknown',
             package: r.package || 'N/A',
-            batchYear: r.batch_year || r.batchYear || '2024',
+            batchYear: r.batch_year || r.batchYear || defaultYear,
             photoUrl: r.photo_url || r.photoUrl || '',
           });
         }

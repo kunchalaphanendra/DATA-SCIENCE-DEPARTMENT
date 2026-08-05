@@ -69,6 +69,7 @@ export default function Home() {
         defaultPlacementsData.forEach(item => map.set(item.studentName, item));
         p.data.forEach(r => {
           const studentName = r.student_name || r.studentName || '';
+          const defaultYear = studentName.startsWith('21') ? '2021' : studentName.startsWith('20') ? '2020' : '2020';
           const existing = map.get(studentName);
           if (existing) {
             map.set(studentName, {
@@ -76,7 +77,7 @@ export default function Home() {
               id: r.id || existing.id,
               company: r.company || existing.company,
               package: r.package || existing.package,
-              batchYear: r.batch_year || r.year || existing.batchYear,
+              batchYear: r.batch_year || r.year || existing.batchYear || defaultYear,
               photoUrl: r.photo_url || r.photoUrl || existing.photoUrl,
             });
           }
