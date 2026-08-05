@@ -63,15 +63,7 @@ export default function Placements() {
         <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold text-violet-900">Placements</h1>
           <p className="mt-4 text-gray-600">Connecting our talent with global opportunities.</p>
-          <a 
-            href="https://vignanits.ac.in/placements/" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="mt-4 inline-flex items-center gap-2 rounded-full bg-amber-500 hover:bg-amber-600 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:scale-105"
-          >
-            Visit Official Placement Site ↗
-          </a>
-          <div className="mx-auto mt-6 h-1 w-24 bg-amber-500" />
+          <div className="mx-auto mt-4 h-1 w-24 bg-amber-500" />
         </div>
 
         {/* Stats Grid */}
