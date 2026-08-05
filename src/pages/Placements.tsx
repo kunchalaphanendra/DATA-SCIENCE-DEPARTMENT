@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase';
 import { Placement, PlacementStats, CompanyLogo } from '@/src/types';
-import { TrendingUp, Award, Building2, Briefcase } from 'lucide-react';
+import { TrendingUp, Award, Building2, Briefcase, Search } from 'lucide-react';
 import { loadMergedPlacements } from '@/src/lib/placementsStorage';
 
 export default function Placements() {
@@ -9,7 +9,8 @@ export default function Placements() {
   const [stats, setStats] = useState<PlacementStats[]>([]);
   const [logos, setLogos] = useState<CompanyLogo[]>([]);
   const [selectedYear, setSelectedYear] = useState('All');
-  const [visibleCount, setVisibleCount] = useState(12);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [visibleCount, setVisibleCount] = useState(100);
 
   useEffect(() => {
     // Placements
@@ -46,7 +47,15 @@ export default function Placements() {
     return pkgB - pkgA;
   });
 
-  const filteredPlacements = sortedPlacements.filter(p => selectedYear === 'All' || p.batchYear === selectedYear);
+  const searchLower = searchTerm.trim().toLowerCase();
+  const filteredPlacements = sortedPlacements.filter(p => {
+    const matchesYear = selectedYear === 'All' || p.batchYear === selectedYear;
+    const matchesSearch = !searchLower || 
+      p.studentName.toLowerCase().includes(searchLower) || 
+      p.company.toLowerCase().includes(searchLower) ||
+      p.package.toLowerCase().includes(searchLower);
+    return matchesYear && matchesSearch;
+  });
   const displayedPlacements = filteredPlacements.slice(0, visibleCount);
   
   const latestStats = stats[0] || { year: '2024', placed: 85, highest: '12 LPA', average: '4.5 LPA', companies: 45 };
@@ -56,7 +65,7 @@ export default function Placements() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-violet-900">Placements</h1>
+          <h1 className="text-4xl font-bold text-violet-900">Placements ({filteredPlacements.length} Students)</h1>
           <p className="mt-4 text-gray-600">Connecting our talent with global opportunities.</p>
           <div className="mx-auto mt-4 h-1 w-24 bg-amber-500" />
         </div>
@@ -94,18 +103,30 @@ export default function Placements() {
         </div>
 
         {/* Filter */}
-        <div className="mb-12 flex items-center justify-between">
+        <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-2xl font-bold text-violet-900">Placed Students</h2>
-          <select
-            value={selectedYear}
-            onChange={(e) => {
-              setSelectedYear(e.target.value);
-              setVisibleCount(12); // Reset view count on filter
-            }}
-            className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-violet-900"
-          >
-            {years.map(y => <option key={y} value={y}>{y === 'All' ? 'All Batches' : `Batch ${y}`}</option>)}
-          </select>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search Roll No / Company..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="rounded-lg border border-gray-200 pl-9 pr-4 py-2 text-sm focus:border-violet-900 focus:outline-none"
+              />
+            </div>
+            <select
+              value={selectedYear}
+              onChange={(e) => {
+                setSelectedYear(e.target.value);
+                setVisibleCount(100);
+              }}
+              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-violet-900"
+            >
+              {years.map(y => <option key={y} value={y}>{y === 'All' ? 'All Batches' : `Batch ${y}`}</option>)}
+            </select>
+          </div>
         </div>
 
         {/* Placed Students Grid */}
