@@ -5,14 +5,14 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/src/lib/supabase';
 import { Notice, Event, Achievement, Placement, Faculty } from '@/src/types';
 import { defaultAchievementsData } from '@/src/data/achievementsData';
-import { defaultFacultyData } from '@/src/data/facultyData';
 import { loadMergedPlacements } from '@/src/lib/placementsStorage';
+import { loadMergedAchievements } from '@/src/lib/achievementsStorage';
 import { cn } from '@/src/lib/utils';
 
 export default function Home() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>(() => loadMergedAchievements([]).slice(0, 3));
   const [placements, setPlacements] = useState<Placement[]>(() => loadMergedPlacements([]).slice(0, 8));
   const [faculty, setFaculty] = useState<Faculty[]>(defaultFacultyData.slice(0, 6));
 
@@ -53,17 +53,7 @@ export default function Home() {
           imageUrl: r.image_url || r.imageUrl || '',
         })));
       }
-      if (a.data) {
-        setAchievements(a.data.map(r => ({
-          id: r.id,
-          studentName: r.student_name || r.studentName,
-          title: r.title,
-          description: r.description,
-          year: r.year,
-          category: r.category,
-          photoUrl: r.photo_url || r.photoUrl || '',
-        })));
-      }
+      setAchievements(loadMergedAchievements(a.data || []).slice(0, 3));
       setPlacements(loadMergedPlacements(p.data || []).slice(0, 8));
       if (f.data && f.data.length > 0) {
         setFaculty(f.data.map(r => ({
