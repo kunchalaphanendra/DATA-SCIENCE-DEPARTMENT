@@ -6,8 +6,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'react-hot-toast';
-import { Plus, Edit2, Trash2, X, Loader2, Image as ImageIcon, Search } from 'lucide-react';
-import { loadMergedPlacements, addDeletedPlacementId, saveCustomPlacement, removeCustomPlacement } from '@/src/lib/placementsStorage';
+import { Plus, Edit2, Trash2, X, Loader2, Image as ImageIcon, Search, RotateCcw } from 'lucide-react';
+import { loadMergedPlacements, addDeletedPlacementId, saveCustomPlacement, removeCustomPlacement, resetPlacementStorage } from '@/src/lib/placementsStorage';
 
 const placementSchema = z.object({
   studentName: z.string().min(1, 'Student name is required'),
@@ -41,6 +41,12 @@ export default function AdminPlacements() {
     } catch {
       setPlacements(loadMergedPlacements([]));
     }
+  };
+
+  const handleRestoreDefaults = () => {
+    resetPlacementStorage();
+    setPlacements(loadMergedPlacements([]));
+    toast.success('Restored all default placement records');
   };
 
   useEffect(() => {
@@ -200,6 +206,14 @@ export default function AdminPlacements() {
               className="rounded-lg border border-gray-200 pl-9 pr-4 py-2 text-sm focus:border-violet-900 focus:outline-none"
             />
           </div>
+          <button
+            onClick={handleRestoreDefaults}
+            title="Restore all default placement records"
+            className="flex items-center gap-1.5 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-sm font-semibold text-violet-900 transition-all hover:bg-violet-100 shrink-0"
+          >
+            <RotateCcw size={16} />
+            Restore Defaults
+          </button>
           <button
             onClick={() => openModal()}
             className="flex items-center gap-2 rounded-lg bg-violet-900 px-4 py-2 font-bold text-white transition-all hover:bg-violet-800 shrink-0"

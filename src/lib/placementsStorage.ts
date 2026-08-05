@@ -15,6 +15,7 @@ export function getDeletedPlacementIds(): string[] {
 
 export function addDeletedPlacementId(idOrName: string) {
   try {
+    if (!idOrName) return;
     const deleted = getDeletedPlacementIds();
     if (!deleted.includes(idOrName)) {
       deleted.push(idOrName);
@@ -51,10 +52,20 @@ export function saveCustomPlacement(placement: Placement) {
 
 export function removeCustomPlacement(idOrName: string) {
   try {
+    if (!idOrName) return;
     const custom = getCustomPlacements().filter(p => p.id !== idOrName && p.studentName !== idOrName);
     localStorage.setItem(CUSTOM_KEY, JSON.stringify(custom));
   } catch (e) {
     console.error('Error removing custom placement', e);
+  }
+}
+
+export function resetPlacementStorage() {
+  try {
+    localStorage.removeItem(DELETED_KEY);
+    localStorage.removeItem(CUSTOM_KEY);
+  } catch (e) {
+    console.error('Error resetting placement storage', e);
   }
 }
 
@@ -103,6 +114,12 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
     if (!deletedSet.has(key) && !deletedSet.has(p.id) && !deletedSet.has(p.studentName)) {
       result.push(p);
     }
+  }
+
+  // Self-healing fallback: if deletedSet wiped out ALL records, reset storage to restore all 35 records
+  if (result.length === 0 && defaultPlacementsData.length > 0) {
+    resetPlacementStorage();
+    return defaultPlacementsData;
   }
 
   return result;
