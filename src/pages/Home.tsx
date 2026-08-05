@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '@/src/lib/supabase';
 import { Notice, Event, Achievement, Placement, Faculty } from '@/src/types';
 import { defaultAchievementsData } from '@/src/data/achievementsData';
+import { defaultFacultyData } from '@/src/data/facultyData';
 import { loadMergedPlacements } from '@/src/lib/placementsStorage';
 import { loadMergedAchievements } from '@/src/lib/achievementsStorage';
 import { cn } from '@/src/lib/utils';
