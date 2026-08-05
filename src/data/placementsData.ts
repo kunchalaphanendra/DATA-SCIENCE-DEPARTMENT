@@ -28,7 +28,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6707',
     studentName: '20891A6707',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6707&background=0F172A&color=F59E0B&font-size=0.33',
@@ -36,7 +36,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6709',
     studentName: '20891A6709',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6709&background=0F172A&color=F59E0B&font-size=0.33',
@@ -52,7 +52,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6712',
     studentName: '20891A6712',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6712&background=0F172A&color=F59E0B&font-size=0.33',
@@ -60,7 +60,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6713',
     studentName: '20891A6713',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6713&background=0F172A&color=F59E0B&font-size=0.33',
@@ -76,7 +76,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6717',
     studentName: '20891A6717',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6717&background=0F172A&color=F59E0B&font-size=0.33',
@@ -84,7 +84,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6718',
     studentName: '20891A6718',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6718&background=0F172A&color=F59E0B&font-size=0.33',
@@ -108,7 +108,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6722',
     studentName: '20891A6722',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6722&background=0F172A&color=F59E0B&font-size=0.33',
@@ -116,7 +116,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6723',
     studentName: '20891A6723',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6723&background=0F172A&color=F59E0B&font-size=0.33',
@@ -124,7 +124,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6729',
     studentName: '20891A6729',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6729&background=0F172A&color=F59E0B&font-size=0.33',
@@ -132,7 +132,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6730',
     studentName: '20891A6730',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6730&background=0F172A&color=F59E0B&font-size=0.33',
@@ -156,7 +156,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6735',
     studentName: '20891A6735',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6735&background=0F172A&color=F59E0B&font-size=0.33',
@@ -164,7 +164,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6736',
     studentName: '20891A6736',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6736&background=0F172A&color=F59E0B&font-size=0.33',
@@ -180,7 +180,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6740',
     studentName: '20891A6740',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6740&background=0F172A&color=F59E0B&font-size=0.33',
@@ -220,7 +220,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6751',
     studentName: '20891A6751',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6751&background=0F172A&color=F59E0B&font-size=0.33',
@@ -228,7 +228,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6752',
     studentName: '20891A6752',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6752&background=0F172A&color=F59E0B&font-size=0.33',
@@ -244,7 +244,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6757',
     studentName: '20891A6757',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6757&background=0F172A&color=F59E0B&font-size=0.33',
@@ -252,7 +252,7 @@ export const defaultPlacementsData: Placement[] = [
   {
     id: 'p-20891A6759',
     studentName: '20891A6759',
-    company: 'Cognizant',
+    company: 'Accenture',
     package: '4.5 LPA',
     batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6759&background=0F172A&color=F59E0B&font-size=0.33',
