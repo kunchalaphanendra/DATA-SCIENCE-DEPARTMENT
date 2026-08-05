@@ -3,6 +3,8 @@ import AdminLayout from '@/src/components/AdminLayout';
 import { supabase } from '@/src/lib/supabase';
 import { Megaphone, Calendar, Users, Trophy, Image as ImageIcon, Briefcase } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { loadMergedPlacements } from '@/src/lib/placementsStorage';
+import { defaultAchievementsData } from '@/src/data/achievementsData';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -18,20 +20,25 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const tables = ['notices', 'events', 'faculty', 'achievements', 'gallery', 'placements'] as const;
-        const counts = await Promise.all(
-          tables.map(async (table) => {
-            const { count } = await supabase.from(table).select('*', { count: 'exact', head: true });
-            return count ?? 0;
-          })
-        );
+        const [n, e, f, a, g, p] = await Promise.all([
+          supabase.from('notices').select('*', { count: 'exact', head: true }),
+          supabase.from('events').select('*', { count: 'exact', head: true }),
+          supabase.from('faculty').select('*', { count: 'exact', head: true }),
+          supabase.from('achievements').select('*'),
+          supabase.from('gallery').select('*', { count: 'exact', head: true }),
+          supabase.from('placements').select('*'),
+        ]);
+
+        const mergedPlacements = loadMergedPlacements(p.data || []);
+        const mergedAchievementsCount = Math.max(a.data?.length || 0, defaultAchievementsData.length);
+
         setStats({
-          notices: counts[0],
-          events: counts[1],
-          faculty: counts[2],
-          achievements: counts[3],
-          gallery: counts[4],
-          placements: counts[5],
+          notices: n.count ?? 0,
+          events: e.count ?? 0,
+          faculty: f.count ?? 0,
+          achievements: mergedAchievementsCount,
+          gallery: g.count ?? 0,
+          placements: mergedPlacements.length,
         });
       } catch (error) {
         console.error('Error fetching stats:', error);
