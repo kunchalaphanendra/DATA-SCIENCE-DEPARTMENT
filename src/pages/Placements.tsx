@@ -129,19 +129,15 @@ export default function Placements() {
               href="https://vignanits.ac.in/placements/"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-xl hover:border-amber-400 hover:-translate-y-1.5 cursor-pointer"
+              className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100 transition-all duration-500 ease-out hover:shadow-xl hover:border-amber-500 hover:-translate-y-2 cursor-pointer"
             >
-              <div className="relative h-64 overflow-hidden bg-slate-900/5 group-hover:bg-slate-950 transition-colors duration-500">
+              <div className="relative h-64 sm:h-72 overflow-hidden bg-slate-100">
                 <img
                   src={p.photoUrl || `https://picsum.photos/seed/${p.id}/400/400`}
                   alt={p.studentName}
-                  className="h-full w-full object-cover object-top transition-all duration-500 group-hover:scale-110 group-hover:object-contain"
+                  className="h-full w-full object-cover object-[center_15%] transition-transform duration-500 ease-out group-hover:scale-108"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end justify-center p-3">
-                  <span className="text-[11px] font-bold text-amber-400 bg-slate-900/90 px-3 py-1 rounded-full border border-amber-500/30 flex items-center gap-1 shadow-md">
-                    Visit Placement Site ↗
-                  </span>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none" />
               </div>
               <div className="p-4 text-center">
                 <h3 className="font-bold text-violet-900 group-hover:text-amber-600 transition-colors">{p.studentName}</h3>

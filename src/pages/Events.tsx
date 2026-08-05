@@ -63,24 +63,20 @@ export default function Events() {
               <div 
                 key={event.id} 
                 onClick={() => setSelectedImage(imgSrc)}
-                className="group overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:shadow-2xl hover:-translate-y-1.5 cursor-pointer flex flex-col justify-between"
+                className="group overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-500 ease-out hover:shadow-2xl hover:border-amber-400 hover:-translate-y-2 cursor-pointer flex flex-col justify-between"
               >
-                <div className="relative h-60 overflow-hidden bg-slate-900/5 group-hover:bg-slate-950 transition-colors duration-500">
+                <div className="relative h-60 sm:h-64 overflow-hidden bg-slate-100">
                   <img
                     src={imgSrc}
                     alt={event.title}
-                    className="h-full w-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:object-contain"
+                    className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-108"
                   />
                   <div className={`absolute left-4 top-4 z-10 rounded-full px-4 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-lg ${
                     event.status === 'Upcoming' ? 'bg-green-500' : 'bg-gray-500'
                   }`}>
                     {event.status}
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end justify-center p-4">
-                    <span className="text-xs font-bold text-amber-400 bg-slate-900/90 px-3 py-1 rounded-full border border-amber-500/40 shadow-lg flex items-center gap-1">
-                      Click to view full image 🔍
-                    </span>
-                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none" />
                 </div>
                 <div className="p-6">
                   <div className="mb-4 flex flex-wrap gap-4 text-xs font-medium text-gray-500">
