@@ -14,7 +14,14 @@ export default function Home() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>(() => loadMergedAchievements([]).slice(0, 3));
-  const [placements, setPlacements] = useState<Placement[]>(() => loadMergedPlacements([]).slice(0, 8));
+  const [placements, setPlacements] = useState<Placement[]>(() => {
+    const all = loadMergedPlacements([]);
+    return [...all].sort((a, b) => {
+      const pkgA = parseFloat(a.package.toString().replace(/[^0-9.]/g, '')) || 0;
+      const pkgB = parseFloat(b.package.toString().replace(/[^0-9.]/g, '')) || 0;
+      return pkgB - pkgA;
+    }).slice(0, 8);
+  });
   const [faculty, setFaculty] = useState<Faculty[]>(defaultFacultyData.slice(0, 6));
 
   // Static Previews
@@ -37,7 +44,7 @@ export default function Home() {
         supabase.from('notices').select('*').order('date', { ascending: false }).limit(5),
         supabase.from('events').select('*').order('date', { ascending: false }).limit(3),
         supabase.from('achievements').select('*').order('id', { ascending: false }).limit(3),
-        supabase.from('placements').select('*').order('id', { ascending: false }).limit(8),
+        supabase.from('placements').select('*'),
         supabase.from('faculty').select('*').order('order', { ascending: true }).limit(6)
       ]);
 
@@ -55,7 +62,13 @@ export default function Home() {
         })));
       }
       setAchievements(loadMergedAchievements(a.data || []).slice(0, 3));
-      setPlacements(loadMergedPlacements(p.data || []).slice(0, 8));
+      const allPlacements = loadMergedPlacements(p.data || []);
+      const topPlacements = [...allPlacements].sort((a, b) => {
+        const pkgA = parseFloat(a.package.toString().replace(/[^0-9.]/g, '')) || 0;
+        const pkgB = parseFloat(b.package.toString().replace(/[^0-9.]/g, '')) || 0;
+        return pkgB - pkgA;
+      }).slice(0, 8);
+      setPlacements(topPlacements);
       if (f.data && f.data.length > 0) {
         setFaculty(f.data.map(r => ({
           id: r.id,
