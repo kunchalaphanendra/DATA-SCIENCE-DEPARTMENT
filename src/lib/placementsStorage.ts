@@ -1,8 +1,18 @@
 import { Placement } from '@/src/types';
 import { defaultPlacementsData } from '@/src/data/placementsData';
 
-const DELETED_KEY = 'vits_deleted_placement_ids';
-const CUSTOM_KEY = 'vits_custom_placements';
+const DELETED_KEY = 'vits_deleted_placement_ids_v3';
+const CUSTOM_KEY = 'vits_custom_placements_v3';
+
+// One-time cleanup of stale legacy keys from earlier testing
+try {
+  if (typeof window !== 'undefined' && localStorage) {
+    localStorage.removeItem('vits_deleted_placement_ids');
+    localStorage.removeItem('vits_custom_placements');
+    localStorage.removeItem('vits_deleted_placement_ids_v2');
+    localStorage.removeItem('vits_custom_placements_v2');
+  }
+} catch {}
 
 export function getDeletedPlacementIds(): string[] {
   try {
@@ -70,6 +80,10 @@ export function resetPlacementStorage() {
   try {
     localStorage.removeItem(DELETED_KEY);
     localStorage.removeItem(CUSTOM_KEY);
+    localStorage.removeItem('vits_deleted_placement_ids');
+    localStorage.removeItem('vits_custom_placements');
+    localStorage.removeItem('vits_deleted_placement_ids_v2');
+    localStorage.removeItem('vits_custom_placements_v2');
   } catch (e) {
     console.error('Error resetting placement storage', e);
   }
@@ -90,9 +104,12 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
     if (normKey) {
       const existing = map.get(normKey);
       map.set(normKey, {
-        ...existing,
-        ...p,
-        studentName: (p.studentName || normKey).trim().toUpperCase(),
+        id: p.id || existing?.id || `p-${normKey}`,
+        studentName: normKey,
+        company: p.company || existing?.company || 'Unknown',
+        package: p.package || existing?.package || 'N/A',
+        batchYear: p.batchYear || existing?.batchYear || '2024',
+        photoUrl: p.photoUrl || existing?.photoUrl || '',
       });
     }
   });
@@ -103,25 +120,14 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
       const normKey = (r.student_name || r.studentName || r.id || '').toString().trim().toUpperCase();
       if (!normKey) return;
       const existing = map.get(normKey);
-      if (existing) {
-        map.set(normKey, {
-          ...existing,
-          id: r.id || existing.id,
-          company: r.company || existing.company,
-          package: r.package || existing.package,
-          batchYear: r.batch_year || r.batchYear || existing.batchYear || '2024',
-          photoUrl: r.photo_url || r.photoUrl || existing.photoUrl,
-        });
-      } else {
-        map.set(normKey, {
-          id: r.id || `p-${normKey}`,
-          studentName: normKey,
-          company: r.company || 'Unknown',
-          package: r.package || 'N/A',
-          batchYear: r.batch_year || r.batchYear || '2024',
-          photoUrl: r.photo_url || r.photoUrl || '',
-        });
-      }
+      map.set(normKey, {
+        id: r.id || existing?.id || `p-${normKey}`,
+        studentName: normKey,
+        company: r.company || existing?.company || 'Unknown',
+        package: r.package || existing?.package || 'N/A',
+        batchYear: r.batch_year || r.batchYear || existing?.batchYear || '2024',
+        photoUrl: r.photo_url || r.photoUrl || existing?.photoUrl || '',
+      });
     });
   }
 

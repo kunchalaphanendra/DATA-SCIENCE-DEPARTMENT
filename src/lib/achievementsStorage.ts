@@ -1,8 +1,18 @@
 import { Achievement } from '@/src/types';
 import { defaultAchievementsData } from '@/src/data/achievementsData';
 
-const DELETED_KEY = 'vits_deleted_achievement_ids';
-const CUSTOM_KEY = 'vits_custom_achievements';
+const DELETED_KEY = 'vits_deleted_achievement_ids_v3';
+const CUSTOM_KEY = 'vits_custom_achievements_v3';
+
+// One-time cleanup of stale legacy keys from earlier testing
+try {
+  if (typeof window !== 'undefined' && localStorage) {
+    localStorage.removeItem('vits_deleted_achievement_ids');
+    localStorage.removeItem('vits_custom_achievements');
+    localStorage.removeItem('vits_deleted_achievement_ids_v2');
+    localStorage.removeItem('vits_custom_achievements_v2');
+  }
+} catch {}
 
 export function getDeletedAchievementIds(): string[] {
   try {
@@ -69,6 +79,10 @@ export function resetAchievementStorage() {
   try {
     localStorage.removeItem(DELETED_KEY);
     localStorage.removeItem(CUSTOM_KEY);
+    localStorage.removeItem('vits_deleted_achievement_ids');
+    localStorage.removeItem('vits_custom_achievements');
+    localStorage.removeItem('vits_deleted_achievement_ids_v2');
+    localStorage.removeItem('vits_custom_achievements_v2');
   } catch (e) {
     console.error('Error resetting achievement storage', e);
   }
