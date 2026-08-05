@@ -64,15 +64,24 @@ export default function Home() {
           photoUrl: r.photo_url || r.photoUrl || '',
         })));
       }
-      if (p.data && p.data.length > 0) {
-        setPlacements(p.data.map(r => ({
-          id: r.id,
-          studentName: r.student_name || r.studentName,
-          company: r.company,
-          package: r.package,
-          batchYear: r.batch_year || r.year || '2024',
-          photoUrl: r.photo_url || r.photoUrl || '',
-        })));
+      if (p.data) {
+        const map = new Map<string, Placement>();
+        defaultPlacementsData.forEach(item => map.set(item.studentName, item));
+        p.data.forEach(r => {
+          const studentName = r.student_name || r.studentName || '';
+          const existing = map.get(studentName);
+          if (existing) {
+            map.set(studentName, {
+              ...existing,
+              id: r.id || existing.id,
+              company: r.company || existing.company,
+              package: r.package || existing.package,
+              batchYear: r.batch_year || r.year || existing.batchYear,
+              photoUrl: r.photo_url || r.photoUrl || existing.photoUrl,
+            });
+          }
+        });
+        setPlacements(Array.from(map.values()).slice(0, 8));
       } else {
         setPlacements(defaultPlacementsData.slice(0, 8));
       }

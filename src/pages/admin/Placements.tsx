@@ -31,21 +31,48 @@ export default function AdminPlacements() {
     resolver: zodResolver(placementSchema),
   });
 
+  const mergePlacements = (dbRows: any[]): Placement[] => {
+    const map = new Map<string, Placement>();
+    defaultPlacementsData.forEach(p => map.set(p.studentName, p));
+
+    if (dbRows && dbRows.length > 0) {
+      dbRows.forEach(r => {
+        const studentName = r.student_name || r.studentName || '';
+        const existing = map.get(studentName);
+        if (existing) {
+          map.set(studentName, {
+            ...existing,
+            id: r.id || existing.id,
+            company: r.company || existing.company,
+            package: r.package || existing.package,
+            batchYear: r.batch_year || r.batchYear || existing.batchYear,
+            photoUrl: r.photo_url || r.photoUrl || existing.photoUrl,
+          });
+        } else if (studentName || r.id) {
+          const key = studentName || r.id;
+          map.set(key, {
+            id: r.id,
+            studentName: studentName || r.id,
+            company: r.company || 'Unknown',
+            package: r.package || 'N/A',
+            batchYear: r.batch_year || r.batchYear || '2024',
+            photoUrl: r.photo_url || r.photoUrl || '',
+          });
+        }
+      });
+    }
+
+    return Array.from(map.values());
+  };
+
   const fetchPlacements = async () => {
     try {
       const { data, error } = await supabase
         .from('placements')
         .select('*')
         .order('created_at', { ascending: false });
-      if (!error && data && data.length > 0) {
-        setPlacements(data.map(r => ({
-          id: r.id,
-          studentName: r.student_name || r.studentName,
-          company: r.company,
-          package: r.package,
-          batchYear: r.batch_year || r.batchYear || '2024',
-          photoUrl: r.photo_url || r.photoUrl || '',
-        })));
+      if (!error && data) {
+        setPlacements(mergePlacements(data));
       } else {
         setPlacements(defaultPlacementsData);
       }
