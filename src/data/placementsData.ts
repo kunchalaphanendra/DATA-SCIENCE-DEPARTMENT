@@ -6,7 +6,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6702',
     company: 'AVYA IT',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6702&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -14,7 +14,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6704',
     company: 'Dexterity',
     package: '1.8 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6704&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -22,7 +22,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6706',
     company: 'Dexterity',
     package: '1.8 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6706&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -30,7 +30,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6707',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6707&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -38,7 +38,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6709',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6709&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -46,7 +46,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6711',
     company: 'HCL Savantis',
     package: '4.6 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6711&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -54,7 +54,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6712',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6712&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -62,7 +62,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6713',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6713&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -70,7 +70,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6716',
     company: 'HCL Savantis',
     package: '4.6 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6716&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -78,7 +78,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6717',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6717&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -86,7 +86,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6718',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6718&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -94,7 +94,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6720',
     company: 'HCL Savantis',
     package: '4.6 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6720&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -102,7 +102,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6721',
     company: 'HCL Savantis',
     package: '4.6 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6721&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -110,7 +110,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6722',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6722&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -118,7 +118,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6723',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6723&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -126,7 +126,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6729',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6729&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -134,7 +134,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6730',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6730&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -142,7 +142,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6731',
     company: 'HCL Savantis',
     package: '4.6 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6731&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -150,7 +150,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6732',
     company: 'HCL Savantis',
     package: '4.6 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6732&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -158,7 +158,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6735',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6735&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -166,7 +166,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6736',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6736&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -174,7 +174,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6738',
     company: 'HCL Savantis',
     package: '4.6 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6738&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -182,7 +182,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6740',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6740&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -190,7 +190,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6745',
     company: 'Dexterity',
     package: '1.8 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6745&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -198,7 +198,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6748',
     company: 'Dexterity',
     package: '1.8 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6748&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -206,7 +206,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6749',
     company: 'HCL Savantis',
     package: '4.6 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6749&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -214,7 +214,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6750',
     company: 'HCL Savantis',
     package: '4.6 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6750&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -222,7 +222,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6751',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6751&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -230,7 +230,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6752',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6752&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -238,7 +238,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6754',
     company: 'HCL Savantis',
     package: '4.6 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6754&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -246,7 +246,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6757',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6757&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -254,7 +254,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6759',
     company: 'Accenture',
     package: '4.5 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6759&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -262,7 +262,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '20891A6760',
     company: 'HCL Savantis',
     package: '4.6 LPA',
-    batchYear: '2020',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6760&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -270,7 +270,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '21895A6702',
     company: 'Dexterity',
     package: '1.8 LPA',
-    batchYear: '2021',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=21895A6702&background=0F172A&color=F59E0B&font-size=0.33',
   },
   {
@@ -278,7 +278,7 @@ export const defaultPlacementsData: Placement[] = [
     studentName: '21895A6706',
     company: 'Dexterity',
     package: '1.8 LPA',
-    batchYear: '2021',
+    batchYear: '2024',
     photoUrl: 'https://ui-avatars.com/api/?name=21895A6706&background=0F172A&color=F59E0B&font-size=0.33',
   },
 ];

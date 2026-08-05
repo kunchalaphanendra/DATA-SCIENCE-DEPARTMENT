@@ -71,7 +71,6 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
   if (supabaseRows && supabaseRows.length > 0) {
     supabaseRows.forEach(r => {
       const studentName = r.student_name || r.studentName || '';
-      const defaultYear = studentName.startsWith('21') ? '2021' : studentName.startsWith('20') ? '2020' : '2020';
       const existing = map.get(studentName);
       if (existing) {
         map.set(studentName, {
@@ -79,7 +78,7 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
           id: r.id || existing.id,
           company: r.company || existing.company,
           package: r.package || existing.package,
-          batchYear: r.batch_year || r.batchYear || existing.batchYear || defaultYear,
+          batchYear: r.batch_year || r.batchYear || existing.batchYear || '2024',
           photoUrl: r.photo_url || r.photoUrl || existing.photoUrl,
         });
       } else if (studentName || r.id) {
@@ -89,7 +88,7 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
           studentName: studentName || r.id,
           company: r.company || 'Unknown',
           package: r.package || 'N/A',
-          batchYear: r.batch_year || r.batchYear || defaultYear,
+          batchYear: r.batch_year || r.batchYear || '2024',
           photoUrl: r.photo_url || r.photoUrl || '',
         });
       }
