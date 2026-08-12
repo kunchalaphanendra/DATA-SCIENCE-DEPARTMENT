@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase';
 import { Placement, PlacementStats, CompanyLogo } from '@/src/types';
-import { TrendingUp, Award, Building2, Briefcase, Search } from 'lucide-react';
+import { TrendingUp, Award, Building2, Briefcase, Search, GraduationCap } from 'lucide-react';
 import { loadMergedPlacements, loadMergedPlacementStats, loadMergedCompanyLogos } from '@/src/lib/placementsStorage';
 
 export default function Placements() {
@@ -37,15 +37,8 @@ export default function Placements() {
 
   const years = ['All', ...Array.from(new Set(placements.map(p => p.batchYear)))].sort((a, b) => (b as string).localeCompare(a as string));
   
-  // Sort by highest package parsing "X LPA"
-  const sortedPlacements = [...placements].sort((a, b) => {
-    const pkgA = parseFloat(a.package.toString().replace(/[^0-9.]/g, '')) || 0;
-    const pkgB = parseFloat(b.package.toString().replace(/[^0-9.]/g, '')) || 0;
-    return pkgB - pkgA;
-  });
-
   const searchLower = searchTerm.trim().toLowerCase();
-  const filteredPlacements = sortedPlacements.filter(p => {
+  const filteredPlacements = placements.filter(p => {
     const matchesYear = selectedYear === 'All' || p.batchYear === selectedYear;
     const matchesSearch = !searchLower || 
       p.studentName.toLowerCase().includes(searchLower) || 
@@ -87,15 +80,27 @@ export default function Placements() {
 
         {/* Company Logos */}
         <div className="mb-20">
-          <h2 className="mb-8 text-center text-2xl font-bold text-violet-900">Our Top Recruiters</h2>
-          <div className="flex flex-wrap justify-center gap-8 opacity-60 grayscale transition-all hover:grayscale-0">
-            {logos.length > 0 ? logos.map((logo) => (
-              <img key={logo.id} src={logo.logoUrl} alt={logo.name} className="h-12 object-contain" />
-            )) : (
-              ['Google', 'Microsoft', 'Amazon', 'TCS', 'Infosys', 'Wipro', 'Accenture'].map(name => (
-                <div key={name} className="text-xl font-bold text-gray-400">{name}</div>
-              ))
-            )}
+          <h2 className="mb-8 text-center text-2xl sm:text-3xl font-extrabold text-violet-950">Our Top Recruiters</h2>
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+            {logos.map((logo) => (
+              <div
+                key={logo.id || logo.name}
+                className="flex items-center gap-3 rounded-2xl bg-white px-5 py-3 shadow-md border border-slate-100 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:border-amber-400"
+              >
+                <img
+                  src={logo.logoUrl}
+                  alt={logo.name}
+                  loading="lazy"
+                  className="h-8 w-8 object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
+                />
+                <span className="font-extrabold text-violet-950 text-sm sm:text-base tracking-wide">
+                  {logo.name}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -128,31 +133,47 @@ export default function Placements() {
 
         {/* Placed Students Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {displayedPlacements.map((p) => (
-            <a 
-              key={p.id} 
-              href="https://vignanits.ac.in/placements/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100 transition-all duration-500 ease-out hover:shadow-xl hover:border-amber-500 hover:-translate-y-2 cursor-pointer"
-            >
-              <div className="relative h-64 sm:h-72 overflow-hidden bg-slate-100">
-                <img
-                  src={p.photoUrl || `https://picsum.photos/seed/${p.id}/400/400`}
-                  alt={p.studentName}
-                  className="h-full w-full object-cover object-[center_15%] transition-transform duration-500 ease-out group-hover:scale-108"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none" />
-              </div>
-              <div className="p-4 text-center">
-                <h3 className="font-bold text-violet-900 group-hover:text-amber-600 transition-colors">{p.studentName}</h3>
-                <p className="text-sm font-bold text-amber-600">{p.company}</p>
-                <div className="mt-2 text-xs text-gray-500">
-                  Package: <span className="font-bold text-gray-700">{p.package}</span>
+          {displayedPlacements.map((p) => {
+            const hasRealPhoto = p.photoUrl && !p.photoUrl.includes('ui-avatars.com');
+            return (
+              <a 
+                key={p.id} 
+                href="https://vignanits.ac.in/placements/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-100 transition-all duration-500 ease-out hover:shadow-xl hover:border-amber-400 hover:-translate-y-2 cursor-pointer"
+              >
+                <div className="relative h-56 sm:h-64 overflow-hidden bg-gradient-to-b from-slate-800 to-slate-950 flex flex-col items-center justify-center p-6 text-center">
+                  {hasRealPhoto ? (
+                    <img
+                      src={p.photoUrl}
+                      alt={p.studentName}
+                      loading="lazy"
+                      className="h-full w-full object-cover object-[center_15%] transition-transform duration-500 ease-out group-hover:scale-108"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="h-16 w-16 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-amber-400 shadow-inner">
+                        <GraduationCap size={32} />
+                      </div>
+                      <div className="text-white font-black text-base tracking-wide">{p.studentName}</div>
+                      <div className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-3 py-0.5 text-xs font-bold text-amber-300 border border-amber-500/30">
+                        {p.company}
+                      </div>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none" />
                 </div>
-              </div>
-            </a>
-          ))}
+                <div className="p-4 text-center bg-white">
+                  <h3 className="font-bold text-violet-900 group-hover:text-amber-600 transition-colors text-base">{p.studentName}</h3>
+                  <p className="text-sm font-bold text-amber-600">{p.company}</p>
+                  <div className="mt-2 text-xs text-gray-500">
+                    Package: <span className="font-bold text-gray-700">{p.package}</span>
+                  </div>
+                </div>
+              </a>
+            );
+          })}
         </div>
 
         <div className="mt-12 flex justify-center gap-4">

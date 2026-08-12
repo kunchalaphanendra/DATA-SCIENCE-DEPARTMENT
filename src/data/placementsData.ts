@@ -216,9 +216,12 @@ export const defaultPlacementStats = [
 ];
 
 export const defaultCompanyLogos = [
-  { id: 'l-1', name: 'AVYA IT', logoUrl: 'https://ui-avatars.com/api/?name=AVYA+IT&background=0F172A&color=F59E0B' },
-  { id: 'l-2', name: 'Dexterity', logoUrl: 'https://ui-avatars.com/api/?name=Dexterity&background=0F172A&color=F59E0B' },
-  { id: 'l-3', name: 'TCS', logoUrl: 'https://ui-avatars.com/api/?name=TCS&background=0F172A&color=F59E0B' },
-  { id: 'l-4', name: 'Accenture', logoUrl: 'https://ui-avatars.com/api/?name=Accenture&background=0F172A&color=F59E0B' },
+  { id: 'l-1', name: 'TCS', logoUrl: 'https://logo.clearbit.com/tcs.com' },
+  { id: 'l-2', name: 'Accenture', logoUrl: 'https://logo.clearbit.com/accenture.com' },
+  { id: 'l-3', name: 'Infosys', logoUrl: 'https://logo.clearbit.com/infosys.com' },
+  { id: 'l-4', name: 'Wipro', logoUrl: 'https://logo.clearbit.com/wipro.com' },
+  { id: 'l-5', name: 'Cognizant', logoUrl: 'https://logo.clearbit.com/cognizant.com' },
+  { id: 'l-6', name: 'AVYA IT', logoUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&q=80' },
+  { id: 'l-7', name: 'Dexterity', logoUrl: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=120&q=80' },
 ];
 
