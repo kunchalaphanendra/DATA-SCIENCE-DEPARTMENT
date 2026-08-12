@@ -1,14 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/src/lib/supabase';
 import { GalleryImage } from '@/src/types';
 import { loadMergedGallery } from '@/src/lib/galleryStorage';
+import GalleryPostCard from '@/src/components/GalleryPostCard';
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+
+interface AlbumGroup {
+  album: string;
+  images: GalleryImage[];
+}
 
 export default function Gallery() {
   const [images, setImages] = useState<GalleryImage[]>(() => loadMergedGallery([]));
   const [filter, setFilter] = useState('All');
-  const [index, setIndex] = useState(-1);
+  const [lightboxIndex, setLightboxIndex] = useState(-1);
   const [visibleCount, setVisibleCount] = useState(12);
 
   useEffect(() => {
@@ -26,33 +32,69 @@ export default function Gallery() {
       });
   }, []);
 
-  const albums = ['All', ...Array.from(new Set(images.map(img => img.album)))];
-  const filteredImages = images.filter(img => filter === 'All' || img.album === filter);
-  const displayedImages = filteredImages.slice(0, visibleCount);
+  // Group images by Album/Event Post
+  const groupedAlbums: AlbumGroup[] = useMemo(() => {
+    const map = new Map<string, GalleryImage[]>();
+    images.forEach(img => {
+      const albumKey = (img.album || 'General').trim();
+      if (!map.has(albumKey)) {
+        map.set(albumKey, []);
+      }
+      map.get(albumKey)!.push(img);
+    });
+    return Array.from(map.entries()).map(([album, imgs]) => ({
+      album,
+      images: imgs,
+    }));
+  }, [images]);
+
+  const albumNames = ['All', ...groupedAlbums.map(g => g.album)];
+
+  const filteredAlbums = useMemo(() => {
+    return groupedAlbums.filter(g => filter === 'All' || g.album === filter);
+  }, [groupedAlbums, filter]);
+
+  const displayedAlbums = filteredAlbums.slice(0, visibleCount);
+
+  // Flattened list of images for Lightbox navigation
+  const allFilteredImages = useMemo(() => {
+    return filteredAlbums.flatMap(g => g.images);
+  }, [filteredAlbums]);
+
+  const handleOpenLightbox = (targetImgId: string) => {
+    const globalIdx = allFilteredImages.findIndex(img => img.id === targetImgId);
+    if (globalIdx !== -1) {
+      setLightboxIndex(globalIdx);
+    } else {
+      setLightboxIndex(0);
+    }
+  };
 
   return (
-    <div className="py-16">
+    <div className="py-16 bg-slate-50/50 min-h-screen">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-violet-900">Department Gallery</h1>
-          <p className="mt-4 text-gray-600">Capturing moments of learning, innovation, and joy.</p>
-          <div className="mx-auto mt-4 h-1 w-24 bg-amber-500" />
+          <h1 className="text-4xl font-black text-violet-950 tracking-tight">Department Gallery</h1>
+          <p className="mt-3 text-base text-gray-600 font-medium">
+            Capturing moments of learning, innovation, and joy in grouped album posts.
+          </p>
+          <div className="mx-auto mt-4 h-1.5 w-24 rounded-full bg-amber-500" />
         </div>
 
-        {/* Filters */}
-        <div className="mb-12 flex flex-wrap justify-center gap-2">
-          {albums.map((album) => (
+        {/* Filter Pills */}
+        <div className="mb-12 flex flex-wrap justify-center gap-2.5">
+          {albumNames.map((album) => (
             <button
               key={album}
               onClick={() => {
                 setFilter(album);
-                setVisibleCount(12); // Reset view count on filter
+                setVisibleCount(12);
               }}
-              className={`rounded-full px-6 py-2 text-sm font-bold transition-all ${
+              className={`rounded-full px-6 py-2 text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-200 ${
                 filter === album
-                  ? 'bg-violet-900 text-white shadow-md'
-                  : 'bg-white text-violet-900 border border-gray-200 hover:border-violet-900'
+                  ? 'bg-violet-900 text-white shadow-lg shadow-violet-900/20 scale-105'
+                  : 'bg-white text-violet-950 border border-slate-200 hover:border-violet-900 hover:bg-slate-50'
               }`}
             >
               {album}
@@ -60,58 +102,55 @@ export default function Gallery() {
           ))}
         </div>
 
-        {/* Masonry-like Grid */}
-        <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
-          {displayedImages.map((img, i) => (
-            <div
-              key={img.id}
-              className="group relative mb-4 break-inside-avoid overflow-hidden rounded-xl bg-gray-100 cursor-pointer"
-              onClick={() => setIndex(i)}
-            >
-              <img
-                src={img.imageUrl}
-                alt={img.caption || 'Gallery Image'}
-                loading="lazy"
-                decoding="async"
-                className="w-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/60 to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
-                <p className="text-sm font-medium text-white">{img.caption || img.album}</p>
-              </div>
-            </div>
+        {/* Instagram-Style Album Posts Grid */}
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {displayedAlbums.map((group) => (
+            <GalleryPostCard
+              key={group.album}
+              album={group.album}
+              images={group.images}
+              onOpenLightbox={(slideIndex) => {
+                const targetImg = group.images[slideIndex] || group.images[0];
+                if (targetImg) {
+                  handleOpenLightbox(targetImg.id);
+                }
+              }}
+            />
           ))}
         </div>
 
+        {/* View More / View Less */}
         <div className="mt-12 flex justify-center gap-4">
-          {visibleCount < filteredImages.length && (
+          {visibleCount < filteredAlbums.length && (
             <button
               onClick={() => setVisibleCount(prev => prev + 12)}
-              className="rounded-full border-2 border-violet-900 px-8 py-3 text-sm font-bold text-violet-900 transition-all hover:bg-violet-900 hover:text-white"
+              className="rounded-full border-2 border-violet-900 px-8 py-3 text-sm font-bold text-violet-900 transition-all hover:bg-violet-900 hover:text-white shadow-md"
             >
-              View More
+              View More Albums
             </button>
           )}
           {visibleCount > 12 && (
             <button
               onClick={() => setVisibleCount(12)}
-              className="rounded-full border-2 border-gray-300 px-8 py-3 text-sm font-bold text-gray-600 transition-all hover:border-gray-500 hover:bg-gray-50 hover:text-gray-900"
+              className="rounded-full border-2 border-slate-300 px-8 py-3 text-sm font-bold text-slate-600 transition-all hover:border-slate-500 hover:bg-slate-100 hover:text-slate-900"
             >
               View Less
             </button>
           )}
         </div>
 
-        {filteredImages.length === 0 && (
-          <div className="py-20 text-center text-gray-500 italic">
-            No images found in this album.
+        {filteredAlbums.length === 0 && (
+          <div className="py-20 text-center text-gray-500 italic text-base">
+            No albums found in this category.
           </div>
         )}
 
+        {/* Fullscreen Lightbox */}
         <Lightbox
-          index={index}
-          open={index >= 0}
-          close={() => setIndex(-1)}
-          slides={filteredImages.map(img => ({ src: img.imageUrl, title: img.caption }))}
+          index={lightboxIndex}
+          open={lightboxIndex >= 0}
+          close={() => setLightboxIndex(-1)}
+          slides={allFilteredImages.map(img => ({ src: img.imageUrl, title: `${img.album} - ${img.caption}` }))}
         />
       </div>
     </div>
