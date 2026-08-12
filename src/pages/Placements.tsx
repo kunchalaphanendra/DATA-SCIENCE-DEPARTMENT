@@ -15,10 +15,12 @@ export default function Placements() {
   useEffect(() => {
     // Placements
     supabase.from('placements').select('*').order('created_at', { ascending: false })
-      .then(({ data }) => {
-        setPlacements(loadMergedPlacements(data || []));
-      })
-      .catch(() => setPlacements(loadMergedPlacements([])));
+      .then(
+        ({ data }) => {
+          setPlacements(loadMergedPlacements(data || []));
+        },
+        () => setPlacements(loadMergedPlacements([]))
+      );
 
     // Stats (optional table - won't break if missing)
     supabase.from('placement_stats').select('*').order('year', { ascending: false })

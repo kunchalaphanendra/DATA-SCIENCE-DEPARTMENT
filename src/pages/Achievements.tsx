@@ -12,10 +12,12 @@ export default function Achievements() {
 
   useEffect(() => {
     supabase.from('achievements').select('*').order('created_at', { ascending: false })
-      .then(({ data }) => {
-        setAchievements(loadMergedAchievements(data || []));
-      })
-      .catch(() => setAchievements(loadMergedAchievements([])));
+      .then(
+        ({ data }) => {
+          setAchievements(loadMergedAchievements(data || []));
+        },
+        () => setAchievements(loadMergedAchievements([]))
+      );
   }, []);
 
   const categories = ['All', 'Academic', 'Sports', 'Technical', 'Cultural'];
