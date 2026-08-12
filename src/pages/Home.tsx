@@ -93,11 +93,9 @@ export default function Home() {
             publications: r.publications || [],
             awards: r.awards || [],
             photoUrl: r.photo_url || '',
-            order: r.order || 0,
           })));
         }
       });
-  }, []);
 
     // Setup Realtime Subscription for Notices
     const channel = supabase

@@ -3,8 +3,7 @@ import { supabase } from '@/src/lib/supabase';
 import { ResearchDocument } from '@/src/types';
 import { defaultResearchDocuments } from '@/src/data/researchData';
 import { Beaker, FileText, Users, Lightbulb, ExternalLink } from 'lucide-react';
-import MOUsSection from '@/src/components/MOUsSection';
-
+export default function Research() {
   const loadLocalDocs = () => {
     const stored = localStorage.getItem('vits_research_docs_v1');
     if (stored) {
