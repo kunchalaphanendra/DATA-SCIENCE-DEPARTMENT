@@ -209,3 +209,16 @@ export const defaultPlacementsData: Placement[] = [
     photoUrl: 'https://ui-avatars.com/api/?name=20891A6759&background=0F172A&color=F59E0B&font-size=0.33',
   },
 ];
+
+export const defaultPlacementStats = [
+  { id: 's-1', year: '2024', placed: 85, highest: '12 LPA', average: '4.5 LPA', companies: 24 },
+  { id: 's-2', year: '2023', placed: 90, highest: '10 LPA', average: '4.2 LPA', companies: 20 },
+];
+
+export const defaultCompanyLogos = [
+  { id: 'l-1', name: 'AVYA IT', logoUrl: 'https://ui-avatars.com/api/?name=AVYA+IT&background=0F172A&color=F59E0B' },
+  { id: 'l-2', name: 'Dexterity', logoUrl: 'https://ui-avatars.com/api/?name=Dexterity&background=0F172A&color=F59E0B' },
+  { id: 'l-3', name: 'TCS', logoUrl: 'https://ui-avatars.com/api/?name=TCS&background=0F172A&color=F59E0B' },
+  { id: 'l-4', name: 'Accenture', logoUrl: 'https://ui-avatars.com/api/?name=Accenture&background=0F172A&color=F59E0B' },
+];
+

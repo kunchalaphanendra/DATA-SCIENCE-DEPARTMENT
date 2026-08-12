@@ -8,11 +8,12 @@ import { defaultAchievementsData } from '@/src/data/achievementsData';
 import { defaultFacultyData } from '@/src/data/facultyData';
 import { loadMergedPlacements } from '@/src/lib/placementsStorage';
 import { loadMergedAchievements } from '@/src/lib/achievementsStorage';
+import { loadMergedEvents } from '@/src/lib/eventsStorage';
 import { cn } from '@/src/lib/utils';
 
 export default function Home() {
   const [notices, setNotices] = useState<Notice[]>([]);
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<Event[]>(() => loadMergedEvents([]).slice(0, 3));
   const [achievements, setAchievements] = useState<Achievement[]>(() => loadMergedAchievements([]).slice(0, 3));
   const [placements, setPlacements] = useState<Placement[]>(() => {
     const all = loadMergedPlacements([]);
@@ -38,58 +39,65 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    // Initial fetch
-    const fetchData = async () => {
-      const [n, e, a, p, f] = await Promise.all([
-        supabase.from('notices').select('*').order('date', { ascending: false }).limit(5),
-        supabase.from('events').select('*').order('date', { ascending: false }).limit(3),
-        supabase.from('achievements').select('*').order('id', { ascending: false }).limit(3),
-        supabase.from('placements').select('*'),
-        supabase.from('faculty').select('*').order('order', { ascending: true }).limit(6)
-      ]);
+    // Independent non-blocking queries
+    supabase.from('notices').select('*').order('date', { ascending: false }).limit(5)
+      .then(({ data }) => { if (data) setNotices(data); });
 
-      if (n.data) setNotices(n.data);
-      if (e.data) {
-        setEvents(e.data.map(r => ({
-          id: r.id,
-          title: r.title,
-          description: r.description,
-          date: r.date,
-          venue: r.venue,
-          category: r.category,
-          status: r.status,
-          imageUrl: r.image_url || r.imageUrl || '',
-        })));
-      }
-      setAchievements(loadMergedAchievements(a.data || []).slice(0, 3));
-      const allPlacements = loadMergedPlacements(p.data || []);
-      const topPlacements = [...allPlacements].sort((a, b) => {
-        const pkgA = parseFloat(a.package.toString().replace(/[^0-9.]/g, '')) || 0;
-        const pkgB = parseFloat(b.package.toString().replace(/[^0-9.]/g, '')) || 0;
-        return pkgB - pkgA;
-      }).slice(0, 8);
-      setPlacements(topPlacements);
-      if (f.data && f.data.length > 0) {
-        setFaculty(f.data.map(r => ({
-          id: r.id,
-          name: r.name,
-          designation: r.designation,
-          qualification: r.qualification,
-          specialization: r.specialization,
-          email: r.email,
-          linkedin: r.linkedin || '',
-          departmentRole: r.department_role || r.departmentRole || '',
-          portfolioUrl: r.portfolio_url || r.portfolioUrl || '',
-          experience: r.experience || '',
-          publications: r.publications || [],
-          awards: r.awards || [],
-          photoUrl: r.photo_url || r.photoUrl || '',
-          order: r.order || 0,
-        })));
-      }
-    };
+    supabase.from('events').select('*').order('date', { ascending: false }).limit(3)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          const remoteEvents: Event[] = data.map(r => ({
+            id: r.id,
+            title: r.title,
+            description: r.description,
+            date: r.date,
+            venue: r.venue,
+            category: r.category,
+            status: r.status,
+            imageUrl: r.image_url || r.imageUrl || '',
+          }));
+          setEvents(loadMergedEvents(remoteEvents).slice(0, 3));
+        }
+      });
 
-    fetchData();
+    supabase.from('achievements').select('*').order('id', { ascending: false }).limit(3)
+      .then(({ data }) => {
+        setAchievements(loadMergedAchievements(data || []).slice(0, 3));
+      });
+
+    supabase.from('placements').select('*')
+      .then(({ data }) => {
+        const allPlacements = loadMergedPlacements(data || []);
+        const sorted = [...allPlacements].sort((a, b) => {
+          const pkgA = parseFloat(a.package.toString().replace(/[^0-9.]/g, '')) || 0;
+          const pkgB = parseFloat(b.package.toString().replace(/[^0-9.]/g, '')) || 0;
+          return pkgB - pkgA;
+        });
+        setPlacements(sorted.slice(0, 8));
+      });
+
+    supabase.from('faculty').select('*').order('order', { ascending: true }).limit(6)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setFaculty(data.map(r => ({
+            id: r.id,
+            name: r.name,
+            designation: r.designation,
+            qualification: r.qualification,
+            specialization: r.specialization,
+            email: r.email,
+            linkedin: r.linkedin || '',
+            departmentRole: r.department_role || '',
+            portfolioUrl: r.portfolio_url || '',
+            experience: r.experience || '',
+            publications: r.publications || [],
+            awards: r.awards || [],
+            photoUrl: r.photo_url || '',
+            order: r.order || 0,
+          })));
+        }
+      });
+  }, []);
 
     // Setup Realtime Subscription for Notices
     const channel = supabase

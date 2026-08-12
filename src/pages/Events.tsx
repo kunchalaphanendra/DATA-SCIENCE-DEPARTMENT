@@ -1,26 +1,30 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase';
 import { Event } from '@/src/types';
+import { loadMergedEvents } from '@/src/lib/eventsStorage';
 import { Calendar, MapPin, Tag, X } from 'lucide-react';
 
 export default function Events() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<Event[]>(() => loadMergedEvents([]));
   const [filter, setFilter] = useState('All');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.from('events').select('*').order('date', { ascending: false })
       .then(({ data }) => {
-        if (data) setEvents(data.map(r => ({
-          id: r.id,
-          title: r.title,
-          description: r.description,
-          date: r.date,
-          venue: r.venue,
-          category: r.category,
-          status: r.status,
-          imageUrl: r.image_url || '',
-        })));
+        if (data && data.length > 0) {
+          const remoteEvents: Event[] = data.map(r => ({
+            id: r.id,
+            title: r.title,
+            description: r.description,
+            date: r.date,
+            venue: r.venue,
+            category: r.category,
+            status: r.status,
+            imageUrl: r.image_url || '',
+          }));
+          setEvents(loadMergedEvents(remoteEvents));
+        }
       });
   }, []);
 
@@ -69,6 +73,8 @@ export default function Events() {
                   <img
                     src={imgSrc}
                     alt={event.title}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-108"
                   />
                   <div className={`absolute left-4 top-4 z-10 rounded-full px-4 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-lg ${

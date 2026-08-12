@@ -5,9 +5,6 @@ import { defaultResearchDocuments } from '@/src/data/researchData';
 import { Beaker, FileText, Users, Lightbulb, ExternalLink } from 'lucide-react';
 import MOUsSection from '@/src/components/MOUsSection';
 
-export default function Research() {
-  const [documents, setDocuments] = useState<ResearchDocument[]>([]);
-
   const loadLocalDocs = () => {
     const stored = localStorage.getItem('vits_research_docs_v1');
     if (stored) {
@@ -18,6 +15,8 @@ export default function Research() {
     }
     return defaultResearchDocuments;
   };
+
+  const [documents, setDocuments] = useState<ResearchDocument[]>(loadLocalDocs);
 
   useEffect(() => {
     const fetchDocs = async () => {

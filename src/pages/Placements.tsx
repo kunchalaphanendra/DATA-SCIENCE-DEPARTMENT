@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase';
 import { Placement, PlacementStats, CompanyLogo } from '@/src/types';
 import { TrendingUp, Award, Building2, Briefcase, Search } from 'lucide-react';
-import { loadMergedPlacements } from '@/src/lib/placementsStorage';
+import { loadMergedPlacements, loadMergedPlacementStats, loadMergedCompanyLogos } from '@/src/lib/placementsStorage';
 
 export default function Placements() {
   const [placements, setPlacements] = useState<Placement[]>(() => loadMergedPlacements([]));
-  const [stats, setStats] = useState<PlacementStats[]>([]);
-  const [logos, setLogos] = useState<CompanyLogo[]>([]);
+  const [stats, setStats] = useState<PlacementStats[]>(() => loadMergedPlacementStats([]));
+  const [logos, setLogos] = useState<CompanyLogo[]>(() => loadMergedCompanyLogos([]));
   const [selectedYear, setSelectedYear] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [visibleCount, setVisibleCount] = useState(100);
@@ -25,18 +25,13 @@ export default function Placements() {
     // Stats (optional table - won't break if missing)
     supabase.from('placement_stats').select('*').order('year', { ascending: false })
       .then(({ data }) => {
-        if (data) setStats(data.map(r => ({
-          id: r.id, year: r.year, placed: r.placed,
-          highest: r.highest, average: r.average, companies: r.companies,
-        })));
+        setStats(loadMergedPlacementStats(data || []));
       });
 
     // Company logos (optional table - won't break if missing)
     supabase.from('company_logos').select('*')
       .then(({ data }) => {
-        if (data) setLogos(data.map(r => ({
-          id: r.id, name: r.name, logoUrl: r.logo_url,
-        })));
+        setLogos(loadMergedCompanyLogos(data || []));
       });
   }, []);
 

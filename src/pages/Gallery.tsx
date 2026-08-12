@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase';
 import { GalleryImage } from '@/src/types';
+import { loadMergedGallery } from '@/src/lib/galleryStorage';
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
 export default function Gallery() {
-  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [images, setImages] = useState<GalleryImage[]>(() => loadMergedGallery([]));
   const [filter, setFilter] = useState('All');
   const [index, setIndex] = useState(-1);
   const [visibleCount, setVisibleCount] = useState(12);
@@ -13,12 +14,15 @@ export default function Gallery() {
   useEffect(() => {
     supabase.from('gallery').select('*').order('created_at', { ascending: false })
       .then(({ data }) => {
-        if (data) setImages(data.map(r => ({
-          id: r.id,
-          imageUrl: r.image_url,
-          album: r.album,
-          caption: r.caption || '',
-        })));
+        if (data && data.length > 0) {
+          const remote: GalleryImage[] = data.map(r => ({
+            id: r.id,
+            imageUrl: r.image_url,
+            album: r.album,
+            caption: r.caption || '',
+          }));
+          setImages(loadMergedGallery(remote));
+        }
       });
   }, []);
 
@@ -67,6 +71,8 @@ export default function Gallery() {
               <img
                 src={img.imageUrl}
                 alt={img.caption || 'Gallery Image'}
+                loading="lazy"
+                decoding="async"
                 className="w-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
               <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/60 to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">

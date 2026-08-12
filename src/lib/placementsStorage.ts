@@ -1,5 +1,5 @@
-import { Placement } from '@/src/types';
-import { defaultPlacementsData } from '@/src/data/placementsData';
+import { Placement, PlacementStats, CompanyLogo } from '@/src/types';
+import { defaultPlacementsData, defaultPlacementStats, defaultCompanyLogos } from '@/src/data/placementsData';
 
 const DELETED_KEY = 'vits_deleted_placement_ids_v3';
 const CUSTOM_KEY = 'vits_custom_placements_v3';
@@ -165,3 +165,47 @@ export function loadMergedPlacements(supabaseRows: any[] = []): Placement[] {
 
   return uniquePlacements;
 }
+
+export function loadMergedPlacementStats(remoteStats?: any[]): PlacementStats[] {
+  if (remoteStats && Array.isArray(remoteStats) && remoteStats.length > 0) {
+    try {
+      localStorage.setItem('vits_placement_stats_cache', JSON.stringify(remoteStats));
+    } catch {}
+    return remoteStats.map(r => ({
+      id: r.id, year: r.year, placed: r.placed,
+      highest: r.highest, average: r.average, companies: r.companies,
+    }));
+  }
+
+  try {
+    const cached = localStorage.getItem('vits_placement_stats_cache');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+
+  return defaultPlacementStats;
+}
+
+export function loadMergedCompanyLogos(remoteLogos?: any[]): CompanyLogo[] {
+  if (remoteLogos && Array.isArray(remoteLogos) && remoteLogos.length > 0) {
+    try {
+      localStorage.setItem('vits_company_logos_cache', JSON.stringify(remoteLogos));
+    } catch {}
+    return remoteLogos.map(r => ({
+      id: r.id, name: r.name, logoUrl: r.logo_url || r.logoUrl,
+    }));
+  }
+
+  try {
+    const cached = localStorage.getItem('vits_company_logos_cache');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+
+  return defaultCompanyLogos;
+}
+

@@ -6,10 +6,34 @@ import { defaultBoardMembers } from '@/src/data/boardOfStudiesData';
 import { defaultDisciplinaryMembers } from '@/src/data/committeeData';
 import { Search, X, Award, GraduationCap, ShieldAlert } from 'lucide-react';
 
+const loadBOSData = () => {
+  try {
+    const stored = localStorage.getItem('vits_bos_members_v3');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length >= defaultBoardMembers.length) {
+        return parsed;
+      }
+    }
+  } catch (e) {}
+  return defaultBoardMembers;
+};
+
+const loadCommitteeData = () => {
+  try {
+    const stored = localStorage.getItem('vits_disciplinary_committee_v1');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {}
+  return defaultDisciplinaryMembers;
+};
+
 export default function FacultyPage() {
-  const [faculty, setFaculty] = useState<Faculty[]>([]);
-  const [boardMembers, setBoardMembers] = useState<BoardMember[]>([]);
-  const [committeeMembers, setCommitteeMembers] = useState<CommitteeMember[]>([]);
+  const [faculty, setFaculty] = useState<Faculty[]>(defaultFacultyData);
+  const [boardMembers, setBoardMembers] = useState<BoardMember[]>(loadBOSData);
+  const [committeeMembers, setCommitteeMembers] = useState<CommitteeMember[]>(loadCommitteeData);
   const [filter, setFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFaculty, setSelectedFaculty] = useState<Faculty | null>(null);
@@ -38,30 +62,6 @@ export default function FacultyPage() {
           setFaculty(defaultFacultyData);
         }
       });
-
-    const loadBOSData = () => {
-      const stored = localStorage.getItem('vits_bos_members_v3');
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length >= defaultBoardMembers.length) {
-            return parsed;
-          }
-        } catch (e) {}
-      }
-      return defaultBoardMembers;
-    };
-
-    const loadCommitteeData = () => {
-      const stored = localStorage.getItem('vits_disciplinary_committee_v1');
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-        } catch (e) {}
-      }
-      return defaultDisciplinaryMembers;
-    };
 
     // Fetch Board of Studies members
     const fetchBOS = async () => {
