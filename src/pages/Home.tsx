@@ -9,10 +9,11 @@ import { defaultFacultyData } from '@/src/data/facultyData';
 import { loadMergedPlacements } from '@/src/lib/placementsStorage';
 import { loadMergedAchievements } from '@/src/lib/achievementsStorage';
 import { loadMergedEvents } from '@/src/lib/eventsStorage';
+import { loadMergedNotices } from '@/src/lib/noticesStorage';
 import { cn } from '@/src/lib/utils';
 
 export default function Home() {
-  const [notices, setNotices] = useState<Notice[]>([]);
+  const [notices, setNotices] = useState<Notice[]>(() => loadMergedNotices([]));
   const [events, setEvents] = useState<Event[]>(() => loadMergedEvents([]).slice(0, 3));
   const [achievements, setAchievements] = useState<Achievement[]>(() => loadMergedAchievements([]).slice(0, 3));
   const [placements, setPlacements] = useState<Placement[]>(() => {
@@ -41,7 +42,11 @@ export default function Home() {
   useEffect(() => {
     // Independent non-blocking queries
     supabase.from('notices').select('*').order('date', { ascending: false }).limit(5)
-      .then(({ data }) => { if (data) setNotices(data); });
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setNotices(loadMergedNotices(data));
+        }
+      });
 
     supabase.from('events').select('*').order('date', { ascending: false }).limit(3)
       .then(({ data }) => {

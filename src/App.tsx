@@ -14,6 +14,7 @@ import Achievements from './pages/Achievements';
 import Placements from './pages/Placements';
 import Gallery from './pages/Gallery';
 import Research from './pages/Research';
+import Notices from './pages/Notices';
 import Contact from './pages/Contact';
 
 // Admin Pages
@@ -59,6 +60,7 @@ export default function App() {
             <Route path="/placements" element={<Placements />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/research" element={<Research />} />
+            <Route path="/notices" element={<Notices />} />
             <Route path="/contact" element={<Contact />} />
 
             {/* Admin Routes */}
